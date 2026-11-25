@@ -1,0 +1,30 @@
+seed 42 (n = 20,000 per group, 100 bootstrap fits)
+  Hispanic      Completed    true 0.341  est 0.343 [0.337, 0.350] ok
+  Hispanic      Dropped out  true 0.342  est 0.333 [0.324, 0.338] MISS
+  Hispanic      Other exit   true 0.317  est 0.325 [0.319, 0.332] MISS
+  Hispanic      mean weeks   true 8.60  est 8.62 [8.52, 8.71] ok
+  Non-Hispanic  Completed    true 0.385  est 0.384 [0.377, 0.390] ok
+  Non-Hispanic  Dropped out  true 0.277  est 0.276 [0.269, 0.282] ok
+  Non-Hispanic  Other exit   true 0.337  est 0.340 [0.334, 0.347] ok
+  Non-Hispanic  mean weeks   true 8.29  est 8.29 [8.20, 8.38] ok
+  wait log-OR per week: true 0.08 (on stage-1 dropout), est 0.047 ± 0.015 (on any dropout; expected to be smaller)
+
+seeds 7 and 8 (60 bootstrap fits each)
+  Hispanic      Completed    true 0.341  est 0.343 [0.336, 0.351] ok
+  Hispanic      Dropped out  true 0.342  est 0.338 [0.332, 0.345] ok
+  Hispanic      Other exit   true 0.317  est 0.318 [0.311, 0.327] ok
+  Hispanic      mean weeks   true 8.60  est 8.68 [8.59, 8.76] ok
+  Non-Hispanic  Completed    true 0.385  est 0.384 [0.377, 0.391] ok
+  Non-Hispanic  Dropped out  true 0.277  est 0.279 [0.274, 0.284] ok
+  Non-Hispanic  Other exit   true 0.337  est 0.337 [0.332, 0.344] ok
+  Non-Hispanic  mean weeks   true 8.29  est 8.26 [8.17, 8.33] ok
+  wait log-OR per week: true 0.08 (on stage-1 dropout), est 0.042 ± 0.015 (on any dropout; expected to be smaller)
+  Hispanic      Completed    true 0.341  est 0.341 [0.334, 0.346] ok
+  Hispanic      Dropped out  true 0.342  est 0.340 [0.334, 0.345] ok
+  Hispanic      Other exit   true 0.317  est 0.320 [0.315, 0.326] ok
+  Hispanic      mean weeks   true 8.60  est 8.70 [8.57, 8.80] ok
+  Non-Hispanic  Completed    true 0.385  est 0.390 [0.383, 0.396] ok
+  Non-Hispanic  Dropped out  true 0.277  est 0.275 [0.268, 0.281] ok
+  Non-Hispanic  Other exit   true 0.337  est 0.335 [0.328, 0.343] ok
+  Non-Hispanic  mean weeks   true 8.29  est 8.25 [8.15, 8.34] ok
+  wait log-OR per week: true 0.08 (on stage-1 dropout), est 0.061 ± 0.016 (on any dropout; expected to be smaller)

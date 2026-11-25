@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The bilingual bottleneck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Fredoka:wght@500;600&family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  /* VOICE: an explorable explanation in three registers: a story, a sandbox, and the math underneath.
+     IDEA: a clinic floor sketched by hand, the way you'd draw a queue on a whiteboard for a friend.
+     PICTURE: blob patients and blob doctors on a board that stays in view while you read or change things.
+     COLOUR and TYPE: white page, ink lines with a hand-drawn wobble, orange for Spanish-preferring patients (the one accent),
+       blue and slate for the other groups, each with its own body shape for colorblind readers; Fredoka headings, Nunito
+       text, Caveat for margin notes. LAYOUT: tabs on top; story = sticky board over scrolling cards; model = settings beside
+       a sticky board; theory = a reading column. Light only: it gets projected in class. */
+  :root { --ink: #1c2333; --ink-2: #4b5468; --paper: #fff; --soft: #f3f5f9; --rule: #d6dbe4; --spanish: #d95f02; --sp-dark: #9a4301; --latino: #1f5fa8; --focus: #1f5fa8; }
+  * { box-sizing: border-box; min-width: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body { margin: 0; background: var(--paper); color: var(--ink); font: 18px/1.65 Nunito, system-ui, -apple-system, "Segoe UI", sans-serif; overflow-x: clip; }
+  h1, h2, h3, .tabs a { font-family: Fredoka, Nunito, system-ui, sans-serif; font-weight: 600; letter-spacing: 0; text-wrap: balance; }
+  h1 { font-size: clamp(2.1rem, 5.5vw, 3.2rem); line-height: 1.05; margin: 34px 0 10px; }
+  h2 { font-size: clamp(1.4rem, 3vw, 1.85rem); line-height: 1.15; margin: 0 0 10px; }
+  h3 { font-size: 1.05rem; margin: 0 0 4px; }
+  p { margin: 0 0 14px; }
+  a { color: var(--latino); }
+  .col { max-width: 720px; margin: 0 auto; padding: 0 22px; }
+  .fine { color: var(--ink-2); font-size: .9rem; }
+  .kicker { font-family: Caveat, cursive; font-size: 1.6rem; color: var(--spanish); margin: 0; }
+  .blobword { display: inline-block; width: 26px; height: 22px; vertical-align: -5px; }
+
+  .tabs { position: relative; z-index: 6; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; padding: 14px 16px 6px; background: #fff; }
+  .tabs a { text-decoration: none; color: var(--ink); font-size: 1.05rem; padding: 8px 18px; min-height: 44px; display: inline-flex; align-items: center; border: 2px solid var(--rule); border-radius: 999px; }
+  .tabs a:hover { border-color: var(--ink); }
+  .tabs a[aria-current="page"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .view[hidden] { display: none; }
+
+  .controls { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 14px; align-items: center; margin: 0 0 8px; }
+  button { font: inherit; font-size: 1rem; font-weight: 800; min-height: 44px; min-width: 44px; padding: 8px 18px; border: 2px solid var(--ink); border-radius: 999px; background: #fff; color: var(--ink); }
+  button.primary { background: var(--ink); color: #fff; }
+  button.event { border-color: var(--spanish); color: var(--sp-dark); }
+  button:hover { background: #eceff4; }
+  button.primary:hover { background: #313b52; }
+  button.event:hover { background: #fdf0e6; }
+  button:active { transform: translateY(1px); }
+  button:disabled { cursor: not-allowed; opacity: .4; }
+  button, select, summary, input, label[for], .tabs a { cursor: pointer; }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  .speed, .checkrow { display: flex; align-items: center; gap: 8px; font-size: .95rem; font-weight: 600; color: var(--ink-2); min-height: 44px; }
+  .speed input { width: 130px; accent-color: var(--ink); }
+  .checkrow input { width: 20px; height: 20px; accent-color: var(--ink); }
+  select { font: inherit; font-size: 1rem; min-height: 44px; padding: 6px 10px; border: 2px solid var(--rule); border-radius: 12px; background: #fff; color: var(--ink); width: 100%; }
+
+  .unit { width: 100%; }
+  .board { position: relative; margin: 0 auto; border-radius: 18px; background: #fff; }
+  .board canvas { display: block; width: 100%; aspect-ratio: 1160 / 640; }
+  .status { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 20px; background: rgba(255,255,255,.94); color: var(--ink-2); font-weight: 600; }
+  .status[hidden] { display: none; }
+  .weekrow { display: flex; justify-content: center; align-items: baseline; flex-wrap: wrap; gap: 4px 18px; margin-top: 2px; }
+  .boxlink { font-size: .9rem; font-weight: 700; color: var(--ink-2); }
+  .weekline { text-align: center; font-variant-numeric: tabular-nums; color: var(--ink-2); font-weight: 700; margin: 2px 0 0; font-size: .95rem; }
+
+  /* Overview: on wide screens the text scrolls on the left while the board stays put on the right;
+     on narrow screens the board sits on top and the cards scroll under it */
+  .storygrid { display: grid; grid-template-columns: minmax(0, 1fr); max-width: 1520px; margin: 0 auto; padding: 0 18px; }
+  .storytext header { max-width: 680px; margin: 0 auto; }
+  .stick { position: sticky; top: 0; z-index: 4; background: #fff; padding: 8px 0 10px; border-bottom: 1px solid var(--rule); order: -1; }
+  .stick .board { width: min(100%, calc(40vh * 1160 / 640)); }
+  .steps { padding: 30px 0 30vh; }
+  .step { max-width: 660px; margin: 0 auto 24vh; background: #fff; border: 2px solid var(--ink); border-radius: 20px; padding: 18px 22px 8px; position: relative; z-index: 1; scroll-margin-top: 50vh; }
+  .scrollhint { margin-top: 18px; border-color: var(--rule); font-weight: 700; color: var(--ink-2); }
+  .scrollhint span { display: inline-block; margin-left: 6px; animation: nudge 1.6s ease-in-out infinite; }
+  @keyframes nudge { 50% { transform: translateY(4px); } }
+  @media (prefers-reduced-motion: reduce) { .scrollhint span { animation: none; } }
+  .linkchip { display: inline-flex; align-items: center; text-decoration: none; color: inherit; border-radius: 999px; }
+  @media (min-width: 1100px) {
+    .storygrid { grid-template-columns: minmax(360px, 480px) minmax(0, 1fr); gap: 34px; align-items: start; }
+    /* The card in focus stays fully opaque; the script moves one card per scroll gesture */
+    .step { transition: opacity .35s; }
+    .step:not(.active) { opacity: .35; }
+    .stick { order: 0; top: 0; height: 100vh; display: flex; flex-direction: column; justify-content: center; border: 0; padding: 0; }
+    .stick .board { width: min(100%, calc((100vh - 150px) * 1160 / 640)); }
+    .storytext header { margin: 0; min-height: calc(100vh - 70px); display: flex; flex-direction: column; justify-content: center; position: relative; }
+    .scrollhint { position: absolute; bottom: 24px; left: 0; }
+    .steps { padding: 30vh 0 40vh; }
+    .step { margin: 0 0 50vh; max-height: 92vh; overflow: auto; }
+  }
+  .step .num { font-family: Caveat, cursive; font-size: 1.4rem; color: var(--spanish); }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 12px; }
+  .chip { font-size: .92rem; font-weight: 700; padding: 6px 12px; min-height: 44px; border: 2px solid var(--rule); background: #fff; }
+  .chip[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: #fff; }
+  .chip small { font-weight: 600; opacity: .75; margin-left: 4px; }
+  .facts { background: var(--soft); border-radius: 14px; padding: 12px 16px; font-size: .95rem; margin-bottom: 14px; }
+  .slot-chart { margin: 8px 0 14px; }
+
+  .chart { background: var(--soft); border-radius: 16px; padding: 10px 12px 6px; }
+  .chart p { font-size: .8rem; color: var(--ink-2); margin: 0 0 4px; line-height: 1.35; }
+  .chart canvas { display: block; width: 100%; height: 170px; touch-action: pan-y; }
+  .chartrow { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 10px; margin-top: 10px; }
+
+  /* Full model: settings on the left, the board and charts stay in view on the right */
+  .model { display: grid; grid-template-columns: minmax(300px, 380px) minmax(0, 1fr); gap: 22px; max-width: 1480px; margin: 0 auto; padding: 14px 18px 40px; align-items: start; }
+  .panel { display: flex; flex-direction: column; gap: 14px; }
+  .card { border: 2px solid var(--ink); border-radius: 18px; padding: 14px 16px; background: #fff; }
+  .card h2 { font-size: 1.2rem; margin-bottom: 8px; }
+  .stage { position: sticky; top: 10px; }
+  .group + .group { border-top: 1px dashed var(--rule); margin-top: 14px; padding-top: 12px; }
+  .slider, .stepper { margin-bottom: 12px; }
+  .slider label, .stepper .lab { display: flex; justify-content: space-between; gap: 8px; font-size: .95rem; font-weight: 800; }
+  .slider output { font-variant-numeric: tabular-nums; }
+  .slider input[type=range] { width: 100%; min-height: 34px; accent-color: var(--ink); }
+  .help { display: block; font-size: .86rem; line-height: 1.4; }
+  .src { display: block; font-size: .8rem; line-height: 1.4; color: var(--ink-2); margin-top: 6px; padding: 6px 10px; border: 1.5px dashed var(--rule); border-radius: 10px; }
+  .src[hidden] { display: none; }
+  button.info.info { position: relative; display: inline-flex; align-items: center; justify-content: center; flex: none; box-sizing: border-box;
+          width: 30px; height: 30px; min-width: 30px; max-width: 30px; min-height: 30px; padding: 0; margin-left: 4px; vertical-align: middle; aspect-ratio: 1;
+          border: 2px solid var(--ink); border-radius: 50%; background: #fff; color: var(--ink); font: 800 .95rem/1 Fredoka, Nunito, system-ui, sans-serif; }
+  button.info.info::after { content: ""; position: absolute; inset: -7px; }
+  button.info.info[aria-expanded="true"] { background: var(--ink); color: #fff; }
+  .stepper .row { display: flex; align-items: center; justify-content: center; gap: 10px; margin: 4px 0 2px; }
+  .stepper output { font-size: 1.3rem; font-weight: 800; min-width: 1.5em; text-align: center; }
+  .stepper button { padding: 0; width: 44px; font-size: 1.3rem; }
+  .eventrow { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+  .scroll { overflow-x: auto; }
+  table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; font-size: .9rem; }
+  th, td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; }
+  thead th { font-size: .8rem; color: var(--ink-2); }
+  details > summary { font-weight: 800; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+
+  /* Theory */
+  .theory { padding-bottom: 60px; }
+  .theory h2 { margin-top: 46px; }
+  .theory figure { margin: 18px 0 22px; }
+  .theory figure img { width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--rule); }
+  .theory figcaption { font-size: .88rem; color: var(--ink-2); margin-top: 6px; }
+  .theory .math { overflow-x: auto; padding: 6px 0; }
+  .theory table { margin: 10px 0 18px; font-size: .82rem; }
+  .gloss { margin: 10px 0 24px; display: grid; grid-template-columns: max-content 1fr; gap: 10px 18px; }
+  .gloss dt { font-weight: 800; display: flex; align-items: baseline; gap: 8px; }
+  .gloss dd { margin: 0; }
+  .gloss .sw { width: 12px; height: 12px; border-radius: 50%; flex: none; transform: translateY(1px); }
+  @media (max-width: 600px) { .gloss { grid-template-columns: 1fr; gap: 2px; } .gloss dd { margin-bottom: 10px; } }
+  .totop { position: fixed; right: 18px; bottom: 18px; z-index: 20; box-shadow: 0 2px 10px rgba(28,35,51,.15); }
+  .totop[hidden] { display: none; }
+  .toc { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .95rem; margin: 10px 0 20px; }
+  .demo { border: 2px solid var(--ink); border-radius: 18px; padding: 12px 14px; margin: 16px 0 22px; }
+  .demo canvas { display: block; width: 100%; aspect-ratio: 900 / 300; }
+  .demo .controls { justify-content: flex-start; margin-top: 8px; }
+  .theory ul li { margin-bottom: 6px; }
+  footer { padding: 30px 22px 50px; text-align: center; }
+
+  @media (max-width: 1000px) {
+    .model { grid-template-columns: 1fr; }
+    .stage { position: static; order: -1; }
+  }
+  @media (max-width: 640px) {
+    body { font-size: 17px; }
+    /* The board needs about 760px to stay legible; on phones it scrolls sideways inside its frame. */
+    .board { overflow-x: auto; }
+    .board canvas { width: 760px; max-width: none; }
+    .stick .board { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<nav class="tabs" aria-label="Views">
+  <a href="#overview" id="t-overview">Overview</a>
+  <a href="#simulator" id="t-simulator">Simulator</a>
+  <a href="#methods" id="t-methods">Methods</a>
+</nav>
+
+<!-- Shared pieces, moved into whichever view is open -->
+<div id="unit" class="unit">
+  <div class="controls">
+    <button id="play" class="primary" type="button" aria-pressed="false">Play</button>
+    <button id="step" type="button">One week</button>
+    <button id="reset" type="button">Restart</button>
+    <label class="speed" for="speed">Pace <input id="speed" type="range" min="0.5" max="8" step="0.5" value="1"> <span id="speedOut">1 week/s</span></label>
+    <label class="checkrow" for="notesToggle"><input type="checkbox" id="notesToggle" checked> Show notes</label>
+  </div>
+  <div class="board" id="boardWrap">
+    <canvas id="board" aria-label="Clinic board: two waiting lines, clinicians' rooms and four exits. The charts and the numbers table carry the same values."></canvas>
+    <div id="status" class="status" role="status">Loading the clinic…</div>
+  </div>
+  <div class="weekrow"><p class="weekline" id="weekLine" aria-live="polite">Week 0</p><a class="boxlink" href="#sec-board">What each box means</a></div>
+</div>
+<div class="chart" id="ch0"><h3>People waiting</h3><p>One line per waiting line, week by week.</p><canvas id="c0" aria-label="Line chart of people waiting in each line by week"></canvas></div>
+<div id="hiddenCharts" hidden></div>
+<div class="chart" id="ch1"><h3>Finished treatment</h3><p>Share of each group's finished referrals who completed.</p><canvas id="c1" aria-label="Line chart of the share of finished referrals who completed, by group"></canvas></div>
+<div class="chart" id="ch2"><h3>Gave up waiting</h3><p>Share of each group's finished referrals who left a line.</p><canvas id="c2" aria-label="Line chart of the share of finished referrals who gave up waiting, by group"></canvas></div>
+
+<main>
+<section class="view" id="v-overview" aria-label="Overview">
+  <div class="storygrid">
+    <div class="storytext">
+      <header>
+        <p class="kicker">a clinic, one week at a time</p>
+        <h1>The bilingual bottleneck</h1>
+        <p>Each blob is a person referred to a small outpatient clinic in California for substance use treatment. Orange blobs <canvas class="blobword" data-type="0" width="52" height="44" aria-hidden="true"></canvas> prefer Spanish and need a clinician who speaks it. Blue blobs <canvas class="blobword" data-type="1" width="52" height="44" aria-hidden="true"></canvas> are Latino and comfortable in English, and slate blobs <canvas class="blobword" data-type="2" width="52" height="44" aria-hidden="true"></canvas> aren't Latino.</p>
+        <button class="scrollhint" id="scrollHint" type="button">Scroll down to continue <span aria-hidden="true">↓</span></button>
+      </header>
+      <div class="steps">
+        <article class="step">
+          <span class="num">one</span>
+          <h2>Three clinicians, 90 slots</h2>
+          <p>The clinic has three clinicians, each with room for 30 patients. A new referral that finds a free slot goes straight in. Every week in treatment, a patient stays, moves to a later phase, or leaves through one of the four exits on the right.</p>
+          <p>The exits show who left in the last ten weeks. A crowded exit means a lot of people are leaving that way right now.</p>
+        </article>
+        <article class="step">
+          <span class="num">two</span>
+          <h2>Two lines</h2>
+          <p>Orange blobs can only see a bilingual clinician. When those 30 slots are full, they wait in the top line, even if an English-only room has space. Everyone else waits in the bottom line and can use a bilingual slot that no orange blob needs.</p>
+          <p>About one in five people still in line gives up each week. They end up in the bottom exit.</p>
+        </article>
+        <article class="step">
+          <span class="num">three</span>
+          <h2>Location changes the clinic</h2>
+          <p>Each area has its own Latino share, its own treatment patterns from TEDS-D 2024, and its own referral volume, set so that simulated patients wait about as often as real patients did there.</p>
+          <label class="fine" for="storySelect">Area</label>
+          <select id="storySelect"></select>
+          <div class="facts js-facts" aria-live="polite"></div>
+        </article>
+        <article class="step">
+          <span class="num">four</span>
+          <h2>When the bilingual clinician quits</h2>
+          <p>About a third of substance use counselors leave their job within a year. If the only Spanish-speaking clinician leaves, orange blobs have nowhere to go until a new hire starts, and bilingual posts take longer to fill.</p>
+          <div class="eventrow"><button class="event js-quit" type="button">Bilingual clinician quits</button><button class="event js-hire" type="button">Hire a bilingual clinician</button></div>
+          <p class="fine js-eventnote" aria-live="polite"></p>
+          <div class="slot-chart" id="storyChartA"></div>
+        </article>
+        <article class="step">
+          <span class="num">five</span>
+          <h2>Results</h2>
+          <p>Once in treatment, Latino and non-Latino patients in California finish at similar rates (adjusted odds ratio 0.96), and close to 48% of both groups drop out.</p>
+          <p>The difference shows up before treatment: 26% of Latino patients waited at least a day to start, against 19% of non-Latino patients. With one bilingual clinician, a single resignation can double the share of Spanish-preferring referrals who give up, as in El Centro.</p>
+          <div class="slot-chart" id="storyChartB"></div>
+          <div class="eventrow" style="margin:16px 0 12px"><a class="chip linkchip" href="#simulator">Open the simulator</a><a class="chip linkchip" href="#methods">Read the methods</a></div>
+        </article>
+      </div>
+    </div>
+    <div class="stick" id="storyStage"></div>
+  </div>
+</section>
+
+<section class="view" id="v-simulator" aria-label="Simulator" hidden>
+  <div class="model">
+    <div class="panel">
+      <div class="card">
+        <h2>Community</h2>
+        <label class="fine" for="commSelect">Each area sets the Latino share, the treatment chains and the referral volume.</label>
+        <select id="commSelect"></select>
+        <div class="facts js-facts" style="margin-top:10px" aria-live="polite"></div>
+      </div>
+      <div class="card">
+        <h2>Events</h2>
+        <div class="eventrow"><button class="event js-quit" type="button">Bilingual clinician quits</button><button class="event js-hire" type="button">Hire a bilingual clinician</button></div>
+        <p class="fine js-eventnote" aria-live="polite" style="margin:8px 0 0"></p>
+      </div>
+      <div class="card" id="settingsCard">
+        <h2>Settings</h2>
+        <p class="fine">Settings start at values taken from TEDS-D or from published studies, and any of them can go past realistic values. Changing staffing or caseload restarts the run, and other changes apply from the next week.</p>
+        <div id="settingsBody"></div>
+      </div>
+      <div class="card">
+        <details>
+          <summary>Numbers behind the board</summary>
+          <div class="scroll">
+            <table>
+              <thead><tr><th scope="col">Group</th><th scope="col">Referred</th><th scope="col">Now in</th><th scope="col">Done</th><th scope="col">Dropped</th><th scope="col">Other</th><th scope="col">Gave up</th><th scope="col">Wait (wk)</th></tr></thead>
+              <tbody id="tbody"><tr><td colspan="8">No referrals yet.</td></tr></tbody>
+            </table>
+          </div>
+        </details>
+      </div>
+    </div>
+    <div class="stage" id="modelStage"></div>
+  </div>
+</section>
+
+<section class="view theory" id="v-methods" aria-label="Methods" hidden>
+  <div class="col">
+    <h1>Methods</h1>
+    <p>The model has three parts. Referrals arrive as a Poisson process, patients wait in a queue where they can give up, and treatment is an absorbing Markov chain estimated from <span data-v="n_ca|int"></span> California outpatient episodes in SAMHSA's TEDS-D 2024.</p>
+    <nav class="toc" aria-label="Sections">
+      <a href="#sec-board">Reading the board</a><a href="#sec-arrivals">Arrivals</a><a href="#sec-queue">Waiting lines</a><a href="#sec-chain">Treatment chain</a><a href="#sec-fit">Estimating the chain</a>
+      <a href="#sec-wait">Waiting and dropout</a><a href="#sec-staff">Staff</a><a href="#sec-metro">Areas</a><a href="#sec-checks">Checks</a><a href="#sec-means">Results</a>
+    </nav>
+
+    <h2 id="sec-board">Reading the board</h2>
+    <p>Every blob is one person referred to the clinic. Each box on the board is a place that person can be in a given week.</p>
+    <dl class="gloss">
+      <dt><span class="sw" style="background:#d95f02"></span>Orange blobs</dt><dd>Latino patients who speak English less than very well. They need a clinician who speaks Spanish.</dd>
+      <dt><span class="sw" style="background:#1f5fa8"></span>Blue blobs</dt><dd>Latino patients who are comfortable in English.</dd>
+      <dt><span class="sw" style="background:#5b6170"></span>Slate blobs</dt><dd>Patients who aren't Latino.</dd>
+      <dt>Waiting for a bilingual clinician</dt><dd>Orange blobs referred but not yet admitted. Only a slot with a bilingual clinician can take them, so this line moves only when one of those slots opens.</dd>
+      <dt>Waiting for any clinician</dt><dd>Blue and slate blobs not yet admitted. They take any open slot with an English-only clinician. If lending idle bilingual slots is on, they can also take a bilingual slot when no orange blob is waiting.</dd>
+      <dt>Clinician rooms</dt><dd>Each dot is one caseload slot, and a blob in a slot is in treatment. A dashed circle and "hiring" mean the post is empty, with the weeks left until someone is hired. Patients already in that room keep going, but nobody new starts there.</dd>
+      <dt>Phases</dt><dd>While in a room, each blob moves through hidden phases of the treatment chain (section 3). Phases don't show on the board and aren't clinical stages. They only shape how long people stay before they leave.</dd>
+      <dt>Completed</dt><dd>The clinic recorded that the patient finished the planned treatment. In California this is 27% of Hispanic and 25% of non-Hispanic outpatient discharges.</dd>
+      <dt>Dropped out</dt><dd>The patient stopped coming before finishing, without the clinic agreeing to the discharge. This is the most common way to leave, about 47% of Hispanic and 49% of non-Hispanic discharges.</dd>
+      <dt>Other exit</dt><dd>Every other discharge reason in TEDS-D. In California almost all of these are transfers to another program or level of care (about 24% of discharges). Jail and deaths add about 1.5%.</dd>
+      <dt>Gave up waiting</dt><dd>The person left the line before being admitted. TEDS-D only records people who were admitted, so this exit comes from the waiting model (section 2), not from the discharge records.</dd>
+      <dt>Bars beside the exits</dt><dd>The share of everyone who has left so far that went through each exit, split by color. The four bars add to 100%. The exit boxes only keep blobs from the last 10 weeks, but the bars count every exit since the run started. Hovering over or tapping a colored piece shows how much of that exit, and of all exits, that group makes up.</dd>
+    </dl>
+
+    <h2 id="sec-arrivals">1. Arrivals</h2>
+    <p>Referrals follow a Poisson process: they arrive one at a time, the counts in separate weeks are independent, and the expected number per week doesn't change over time. The number of referrals of each type in a week is then a Poisson count, and the time between two referrals is exponential.</p>
+    <div class="math">\[ N_i(\text{week}) \sim \text{Poisson}(\lambda_i), \qquad \lambda_i = \lambda \, \pi_i, \qquad \pi = \big(\ell s,\, \ell(1-s),\, 1-\ell\big) \]</div>
+    <p>The three types are Spanish-preferring Latino, English-proficient Latino and non-Latino. \(\ell\) is the Latino share and \(s\) the share of Latinos who speak English less than very well (27% in California, ACS 2021).</p>
+    <p>Little's law, \(L = \lambda W\), gives the total rate: the number of patients in the clinic equals the arrival rate times the average time each one stays. With 90 slots that are a fraction \(\rho\) full on average and an average stay of \(E[T]\) weeks,</p>
+    <div class="math">\[ \lambda = \frac{\rho \cdot 90}{\sum_i \pi_i \, E[T_i]} \]</div>
+    <p>\(E[T_i]\) comes from the treatment chain in section 3, and section 7 sets \(\rho\) for each area.</p>
+
+    <h2 id="sec-queue">2. Waiting lines</h2>
+    <p>Each caseload slot works as a server, so the clinic has \(cK\) servers split into two groups: \(c_b\) bilingual and \(c_e\) English-only clinicians with \(K = 30\) slots each. Spanish-preferring patients can only use bilingual slots. Everyone else uses English-only slots first and bilingual slots when no Spanish-preferring patient is waiting. Both lines are first in, first out.</p>
+    <p>People in line can give up. Each week, a person still waiting leaves with probability \(\theta = 0.21\), which makes patience geometric with mean \(1/\theta \approx 4.8\) weeks, close to the one month reported by Kaplan and Johri. The geometric distribution is the discrete version of the exponential and is also memoryless: someone who has waited three weeks is as likely to leave this week as someone who just arrived.</p>
+    <p>The traffic intensity is \(\rho = \lambda / (cK\mu)\), where \(\mu = 1/E[T]\) is the service rate of one slot. In Kendall notation the clinic is close to an M/G/c queue with abandonment: arrivals are Markovian (M), but treatment length isn't exponential, so service is general (G). The M/M/c formulas still give a useful reference point. For the statewide settings:</p>
+    <div class="scroll"><table id="erlangtable"></table></div>
+    <p>One shared pool of 90 slots would make a small share of patients wait, and only briefly. The bilingual room on its own has plenty of spare capacity for Spanish-preferring patients, until the bilingual post is vacant: then there's no server at all, and the line keeps growing until people give up. The simulation adds what these formulas leave out: two pools that share slots, people giving up, and clinicians who come and go. No closed formula covers that combination, so the clinic is simulated week by week.</p>
+
+    <h2 id="sec-chain">3. Treatment as an absorbing Markov chain</h2>
+    <p>After admission, a patient's week-to-week path is an absorbing Markov chain with \(K\) transient states, called phases, and three absorbing states: completed, dropped out, and other exit (mostly transfers). Each week in phase \(j\) the patient completes (\(c_j\)), drops out (\(d_j\)), leaves another way (\(o_j\)), moves to phase \(j+1\) (\(a_j\)) or stays. In canonical form:</p>
+    <div class="math">\[ P = \begin{pmatrix} Q & R \\ 0 & I_3 \end{pmatrix}, \qquad N = (I-Q)^{-1}, \qquad B = NR, \qquad t = N\mathbf{1} \]</div>
+    <p>\(N\) is the fundamental matrix: \(N_{jk}\) is the expected number of weeks spent in phase \(k\) starting from phase \(j\). \(B\) holds the probability of ending in each absorbing state, and \(t\) the expected number of weeks until absorption, which is the average length of stay. The estimated chain for Hispanic episodes has <span data-v="fits.Hispanic.K"></span> phases:</p>
+    <div class="scroll"><table id="qtable"></table></div>
+    <p>Absorption probabilities and average length of stay, with 95% bootstrap intervals:</p>
+    <div class="scroll"><table id="btable"></table></div>
+    <p>The phases don't stand for clinical stages. A single geometric stay can't reproduce the real lengths of stay, where many patients leave in the first weeks and a large group stays more than four months. Several phases in a row can. The button below runs one patient through the Hispanic chain, one week per step.</p>
+    <div class="demo">
+      <canvas id="demo" aria-label="One patient moving through the treatment phases week by week"></canvas>
+      <div class="controls"><button id="demoGo" class="primary" type="button">Follow one blob</button><span class="fine" id="demoLog" aria-live="polite">Each press starts a new patient in phase 1.</span></div>
+    </div>
+
+    <h2 id="sec-fit">4. Estimating the chain</h2>
+    <p>Each TEDS-D record gives the length of stay and the reason for discharge, so it shows when and how a patient left the chain. Lengths of stay are exact up to 30 days and grouped after that (31 to 45 days, 46 to 60, and so on). For a given set of transition probabilities, the chance of leaving through exit \(k\) in week \(w\) is the chance of starting in phase 1, taking \(w-1\) steps among the phases, and then exiting:</p>
+    <div class="math">\[ f_k(w) = e_1^\top Q^{\,w-1} R \, e_k \]</div>
+    <p>The likelihood adds these chances over the weeks that each length-of-stay group covers, where \(n_{ik}\) is the number of episodes in group \(i\) with exit \(k\) and \(W_{iw}\) is the share of week \(w\)'s days that fall inside group \(i\):</p>
+    <div class="math">\[ \ell(\theta) = \sum_{i,k} n_{ik} \log \sum_{w} W_{iw}\, f_k(w) \]</div>
+    <p>The probabilities come from maximizing \(\ell\) numerically with L-BFGS-B. The number of phases is chosen with BIC \(= -2\ell + p\ln n\), which penalizes extra parameters (\(p = 4(K-1)+3\)), and the lowest value wins:</p>
+    <div class="scroll"><table id="bictable"></table></div>
+    <p>A likelihood-ratio test compares one shared chain with separate chains for Hispanic and non-Hispanic episodes: LR = <span data-v="lr_test.lr|0"></span> with <span data-v="lr_test.df"></span> degrees of freedom, p &lt; 10<sup>−60</sup>, so each group keeps its own chain. The intervals come from 200 bootstrap resamples. As a check, the same code ran on fake data generated from known chains, and 22 of 24 true values fell inside the 95% intervals.</p>
+    <figure><img src="figures/fig1_chain_fit.png" width="1980" height="720" alt="Bar charts of observed length of stay by exit type for Hispanic and non-Hispanic episodes, with the fitted chain's values as dots. The dots track the bars closely." loading="lazy"><figcaption>Observed length of stay and exit type (bars) next to the fitted chain (dots).</figcaption></figure>
+
+    <h2 id="sec-wait">5. Waiting and dropout</h2>
+    <p>TEDS-D also records how long each patient waited to start treatment. A logistic regression of dropout on weeks waited, controlling for ethnicity and co-occurring mental illness, gives an odds ratio of <span data-v="wait_effect.or_per_week|3"></span> per week (95% CI <span data-v="wait_effect.or_ci.0|3"></span> to <span data-v="wait_effect.or_ci.1|3"></span>, n = <span data-v="wait_effect.n|int"></span>): each extra week of waiting raises the odds of dropping out by about 3%.</p>
+    <p>In the simulation, waiting \(w\) weeks multiplies a patient's weekly odds of dropping out during the first four weeks of treatment:</p>
+    <div class="math">\[ \frac{d'}{1-d'} = \frac{d}{1-d}\, e^{\gamma \min(w, 12)} \]</div>
+    <p>Solving for the \(\gamma\) that reproduces the TEDS-D odds ratio gives \(\gamma = \) <span data-v="wait_stage1|3"></span>. The NIATx clinics, where attendance at the fourth session fell from 68.2% to 40.8% after a 30-day wait, would imply \(\gamma = \) <span data-v="wait_niatx|2"></span>. The sensitivity analysis covers both values.</p>
+
+    <h2 id="sec-staff">6. Staff</h2>
+    <p>Clinician departures are another Poisson process, at the 33.2% yearly rate measured by Eby and colleagues, so the chance that a given clinician leaves in a week is \(q = 1 - e^{-0.332/52}\). An empty post is filled after a geometric number of weeks: 8.7 on average for an English-only post and 1.5 times longer for a bilingual one (the 1.5 is an assumption). The patients of a clinician who leaves stay in care, but the room takes no one new until the new hire starts.</p>
+
+    <h2 id="sec-metro">7. Calibrating each area</h2>
+    <p>For California and each metro area with at least 500 outpatient episodes, both chains are estimated again from that area's episodes (a group with fewer than 400 keeps the statewide chain). Then \(\rho\) is chosen so the share of simulated patients who wait a week or more matches the share of real patients who waited 8 days or more in that area:</p>
+    <div class="math">\[ \hat P_\rho(\text{wait} \ge 1 \text{ week}) = \text{share of patients with DAYWAIT} \ge 8 \text{ days} \]</div>
+    <div class="scroll"><table id="metrotable"></table></div>
+    <p class="fine">Fresno and Sacramento report few episodes and very low completion, which likely reflects how those counties report their data.</p>
+
+    <h2 id="sec-checks">8. Checks and sensitivity</h2>
+    <p>With the waiting effect turned off and unlimited slots, the simulated exit shares come out within one percentage point of \(B = NR\):</p>
+    <div class="scroll"><table id="valtable"></table></div>
+    <figure><img src="figures/fig2_chain_outcomes.png" width="1440" height="720" alt="Bars of absorption probabilities by exit for each group with bootstrap intervals, and simulated values as dots." loading="lazy"><figcaption>Absorption probabilities with 95% bootstrap intervals (bars) and simulated values (dots).</figcaption></figure>
+    <p>Eight settings don't come from TEDS-D. Each one was moved across its range on its own, and then all of them were varied together in 300 Latin hypercube samples with 20 runs each. The table gives the partial rank correlation of each setting with the share of Spanish-preferring referrals who give up waiting:</p>
+    <div class="scroll"><table id="prcctable"></table></div>
+    <figure><img src="figures/fig5_tornado.png" width="1620" height="828" alt="Tornado chart: demand, time to fill a post, the bilingual hiring delay and turnover change the giving-up share the most." loading="lazy"><figcaption>One-way sensitivity of the share of Spanish-preferring referrals who give up, San Benito profile with one bilingual clinician out of three.</figcaption></figure>
+    <figure><img src="figures/fig3_staffing_by_community.png" width="1890" height="1152" alt="Dot plots of completion and giving up for Spanish-preferring and non-Latino referrals across six community profiles with one or two bilingual clinicians." loading="lazy"><figcaption>Completion and giving up by community and number of bilingual clinicians, 200 runs each, 95% intervals.</figcaption></figure>
+    <figure><img src="figures/fig4_waitlist_trace.png" width="1800" height="864" alt="One simulated run: the bilingual waiting line grows while the bilingual post is vacant." loading="lazy"><figcaption>One run, chosen because its bilingual post falls vacant: the orange line grows until the new hire starts.</figcaption></figure>
+
+    <h2 id="sec-means">9. Results</h2>
+    <ul>
+      <li>In treatment, Latino and non-Latino patients in California do about the same: the adjusted odds ratio for completing is <span data-v="adjusted.completed.or|2"></span> (95% CI <span data-v="adjusted.completed.ci.0|2"></span> to <span data-v="adjusted.completed.ci.1|2"></span>), and for dropping out <span data-v="adjusted.dropout.or|2"></span>.</li>
+      <li>Latino patients wait to start more often: <span data-v="hisp_wait|pct"></span> of Hispanic episodes started after a day or more, against <span data-v="nonhisp_wait|pct"></span> of non-Hispanic episodes.</li>
+      <li>One bilingual clinician covers demand in most areas. When that clinician leaves, the bilingual line has no server, and in areas with many Latino residents the share of Spanish-preferring referrals who give up doubles.</li>
+      <li>Staff stability matters more than the population mix: the time to fill a post, the extra delay for bilingual hires and turnover have the strongest partial correlations with giving up.</li>
+    </ul>
+    <h2>Limits</h2>
+    <ul>
+      <li>TEDS-D records ethnicity, not language. Spanish-preferring patients use the Hispanic chain, so the model can't show any effect of language-concordant care during treatment.</li>
+      <li>TEDS-D only includes people who reached treatment. People who gave up before admission leave no record, so the waiting side relies on published studies.</li>
+      <li>When a clinician quits, their patients continue in care as if colleagues covered them. The room only stops taking new patients. A real departure may push some patients to transfer or drop out, but no published estimate of that effect turned up.</li>
+      <li>The model has no interpreters, there is no county-level data on English proficiency among Latinos, and TEDS-D counts episodes at publicly funded facilities, not people.</li>
+    </ul>
+    <h2>Sources</h2>
+    <ul class="fine">
+      <li>SAMHSA. Treatment Episode Data Set: Discharges (TEDS-D) 2024 public use file, and TEDS-D 2023 codebook.</li>
+      <li>SAMHSA. N-SUMHSS 2023 state profile, California (clinic size).</li>
+      <li>California Health Care Foundation. California Latino Health Almanac, 2025 (English proficiency).</li>
+      <li>Kaplan EH, Johri M. Treatment on demand: an operational model. Health Care Manag Sci, 2000.</li>
+      <li>Hoffman KA et al. Days to treatment and early retention among patients in treatment for alcohol and drug disorders. Addict Behav, 2011.</li>
+      <li>Eby LT, Burk H, Maher CP. How serious of a problem is staff turnover in substance abuse treatment? J Subst Abuse Treat, 2010.</li>
+      <li>Santa Cruz County Civil Grand Jury, 2023 (hiring time). San Benito County Behavioral Health plan.</li>
+      <li>Gallager RG. Discrete Stochastic Processes, chapter 2: Poisson processes.</li>
+    </ul>
+  </div>
+</section>
+</main>
+
+<button class="totop" id="toTop" type="button" hidden>Back to top <span aria-hidden="true">↑</span></button>
+<footer class="col fine">
+  <p>Data: SAMHSA TEDS-D 2024, California outpatient discharges.</p>
+</footer>
+
+<script>
+{
+  const COL = ["#d95f02", "#1f5fa8", "#5b6170"], DARK = ["#9a4301", "#143f70", "#3b3f49"];
+  const DOC_COL = ["#3f8f8f", "#8c6bb8", "#b56576", "#6c8a3a", "#5d8fbf", "#a0785a"], DOC_DARK = ["#2b6464", "#62498a", "#874a57", "#4c6229", "#3f6a92", "#74543e"];
+  const INK = "#1c2333", INK2 = "#4b5468", RULE = "#d6dbe4";
+  const SANS = "Nunito, system-ui, sans-serif", ROUND = "Fredoka, Nunito, system-ui, sans-serif", HAND = "Caveat, cursive";
+  const TYPES = ["Latino, prefers Spanish", "Latino, English-proficient", "Non-Latino"];
+  const CHAIN_OF_TYPE = ["Hispanic", "Hispanic", "Non-Hispanic"];
+  const EXITS = ["Completed", "Dropped out", "Other exit", "Gave up waiting"];
+  const W = 1160, H = 640;
+  const ROOMS_X0 = 430, ROOMS_X1 = 852, ROOMS_Y = 70, ROOM_H = 452;
+  const EX_X = 872, EX_W = 214, EX_Y = [24, 170, 316, 462], EX_H = 136, EX_COLS = 9, EX_ROWS = 4, EX_SP = 21, RECENT = 10;
+  const REF_SLOTS = 90;
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const $ = id => document.getElementById(id), $$ = sel => [...document.querySelectorAll(sel)];
+  const board = $("board"), bctx = board.getContext && board.getContext("2d");
+  const ui = { play: $("play"), step: $("step"), reset: $("reset"), speed: $("speed"), speedOut: $("speedOut"), week: $("weekLine"),
+               tbody: $("tbody"), status: $("status"), select: $("commSelect"), notes: $("notesToggle"), settings: $("settingsBody") };
+  const showStatus = m => { ui.status.textContent = m; ui.status.hidden = !m; };
+  if (!bctx) showStatus("This browser can't draw the board. The numbers table still updates when you press One week.");
+
+  let DATA = null, comm = 0, P = null, S = null, rng = null, playing = false, last = 0, progress = 0, clock = 0, deco = 0, view = "overview";
+
+  function mulberry32(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  const poisson = lam => { if (lam <= 0) return 0; const L = Math.exp(-lam); let k = 0, p = 1; do { k++; p *= rng(); } while (p > L); return k - 1; };
+  const geometric = p => Math.max(1, Math.ceil(Math.log(1 - rng()) / Math.log(1 - Math.min(p, 0.999))));
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const pc = v => `${Math.round(v * 100)}%`;
+  const esc = s => String(s).replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+
+  function meanWeeks(h) {
+    // Q is upper bidiagonal, so t = (I - Q)^-1 1 solves from the last phase backward.
+    const K = h.length, t = new Array(K);
+    for (let s = K - 1; s >= 0; s--) {
+      const stay = 1 - h[s][0] - h[s][1] - h[s][2] - (s < K - 1 ? h[s][3] : 0);
+      t[s] = (1 + (s < K - 1 ? h[s][3] * t[s + 1] : 0)) / (1 - stay);
+    }
+    return t[0];
+  }
+  function sourcedReferrals(c) {
+    const shares = [c.latino_share * c.spanish_pref_share, c.latino_share * (1 - c.spanish_pref_share), 1 - c.latino_share];
+    const t = CHAIN_OF_TYPE.map(g => meanWeeks(c.stage_probs[g]));
+    return c.offered_load * REF_SLOTS / shares.reduce((a, s, i) => a + s * t[i], 0);
+  }
+  const rates = () => [P.latino_share * P.spanish_pref_share, P.latino_share * (1 - P.spanish_pref_share), 1 - P.latino_share].map(s => s * P.referrals_per_week);
+  const sourced = c => ({ ...DATA.base, latino_share: c.latino_share, spanish_pref_share: c.spanish_pref_share, stage_probs: c.stage_probs,
+                          referrals_per_week: +sourcedReferrals(c).toFixed(1), general: 2, bilingual: 1 });
+
+  // Layout ------------------------------------------------------------------------------------------------
+  function roomLayout(n, K) {
+    const gap = 10, w = n ? (ROOMS_X1 - ROOMS_X0 - gap * (n - 1)) / n : 0;
+    let sp = 24, cols = 1;
+    for (; sp >= 7; sp -= 0.5) { cols = Math.max(1, Math.floor((w - 14) / sp)); if (Math.ceil(K / cols) * sp <= ROOM_H - 72) break; }
+    return { w, gap, sp, cols, r: sp * 0.37 };
+  }
+  const roomX = j => ROOMS_X0 + j * (S.layout.w + S.layout.gap);
+  function slotXY(j, i) {
+    const L = S.layout, left = roomX(j) + (L.w - L.cols * L.sp) / 2 + L.sp / 2;
+    return [left + (i % L.cols) * L.sp, ROOMS_Y + 62 + L.sp / 2 + Math.floor(i / L.cols) * L.sp];
+  }
+  const Q_SHOW = 36;  // 4 rows of 9 fit inside a line's box; the rest wait out of sight and the count shows them
+  function queueXY(q, i) { const p = Math.min(i, Q_SHOW - 1), row = Math.floor(p / 9), col = p % 9; return [392 - col * 24, (q === 0 ? 106 : 394) + row * 24]; }
+  // Exits fill from the right, oldest first, so the next blob to leave is the one nearest the right edge
+  const EX_LEFT = EX_X + (EX_W - (EX_COLS - 1) * EX_SP) / 2;
+  const exitXY = (k, i) => [EX_LEFT + (EX_COLS - 1 - Math.floor(i / EX_ROWS)) * EX_SP, EX_Y[k] + 52 + (i % EX_ROWS) * 23];
+
+  // Blobs and motion ----------------------------------------------------------------------------------------
+  function makeBlob(type) {
+    const y = 256 + Math.random() * 40;  // spawn in the gap between the two waiting boxes
+    return { type, path: [[-30, y]], lens: [0], total: 0, tx: -30, ty: y, t0: 0, dur: 0, hops: 1, s: 0, sv: 0, st: 1, alpha: 0, zone: "entry",
+             phase: Math.random() * 6.28, blink: 2 + Math.random() * 4, mood: 0, r: 9, x: -30, y, vx: 0, vy: 0 };
+  }
+  const ease = u => 0.5 - 0.5 * Math.cos(Math.PI * u);
+  const weekSeconds = () => 1 / +ui.speed.value;
+  const GAP_X = 418, LANE_X = 862, CORR_Y = 542;  // walkways: between lines and rooms, between rooms and exits, under the rooms
+  function moveTo(b, x, y, spread = 0.4, via = []) {
+    if (Math.abs(b.tx - x) < 0.5 && Math.abs(b.ty - y) < 0.5) return;
+    const cur = posAt(b, clock), moving = b.dur > 0 && clock < b.t0 + b.dur, ws = weekSeconds();
+    const pts = [cur];
+    for (const p of [...via, [x, y]]) { const q = pts[pts.length - 1]; if (Math.hypot(p[0] - q[0], p[1] - q[1]) > 0.5) pts.push(p); }
+    const lens = [0];
+    for (let i = 1; i < pts.length; i++) lens.push(lens[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+    Object.assign(b, { path: pts, lens, total: lens[lens.length - 1], tx: x, ty: y });
+    if (reduceMotion) { b.t0 = clock; b.dur = 0; return; }
+    // A blob already walking keeps going from where it is; one standing still waits a random moment of the week first
+    const delay = moving ? 0 : Math.random() * spread * ws;
+    b.t0 = clock + delay;
+    b.dur = Math.max(0.3, Math.min(clamp(0.45 + b.total / 600, 0.6, 2.4), ws * 0.95 - delay));
+    b.hops = Math.max(1, Math.round(b.total / 80));
+  }
+  function posAt(b, t) {
+    if (!b.path || b.dur <= 0 || t >= b.t0 + b.dur) return [b.tx, b.ty];
+    if (t <= b.t0) return b.path[0];
+    const u = (t - b.t0) / b.dur, d = ease(u) * b.total;
+    let i = 1;
+    while (i < b.lens.length - 1 && b.lens[i] < d) i++;
+    const seg = b.lens[i] - b.lens[i - 1] || 1, f = (d - b.lens[i - 1]) / seg, p = b.path[i - 1], q = b.path[i];
+    return [p[0] + (q[0] - p[0]) * f, p[1] + (q[1] - p[1]) * f - Math.abs(Math.sin(Math.PI * u * b.hops)) * 4];
+  }
+
+  // Doctors ------------------------------------------------------------------------------------------------
+  let docSeed = 1;
+  function newDoctor(bilingual, arriving = true) {
+    const r = mulberry32(docSeed++ * 7919);
+    return { bilingual, hue: Math.floor(r() * DOC_COL.length), acc: Math.floor(r() * 4), size: 0.9 + r() * 0.2, phase: r() * 6.28, blink: 1 + r() * 4,
+             yoff: arriving && !reduceMotion ? -70 : 0, vy: 0, alpha: arriving && !reduceMotion ? 0 : 1, leaving: false, x: 0,
+             bubble: arriving ? (bilingual ? "¡hola!" : "hello!") : "", bubbleUntil: clock + 2.2 };
+  }
+  function sayBye(post) {
+    if (!post.doc) return;
+    const d = post.doc; d.leaving = true; d.bubble = "bye!"; d.bubbleUntil = clock + 1.1; d.leaveAt = clock + (reduceMotion ? 0 : 0.9);
+    d.x = roomX(S.posts.indexOf(post)) + S.layout.w / 2;
+    S.leavingDocs.push(d); post.doc = null;
+  }
+
+  function newRun() {
+    rng = mulberry32(20261125 + 101 * P.general + 7 * P.bilingual + 31 * comm);
+    docSeed = 1 + comm * 13;
+    const posts = [];
+    for (let i = 0; i < P.general + P.bilingual; i++) {
+      const bil = i >= P.general;
+      posts.push({ bilingual: bil, vacant: 0, slots: new Array(P.caseload_per_clinician).fill(null), doc: newDoctor(bil, false) });
+    }
+    S = { week: 0, posts, layout: roomLayout(posts.length, P.caseload_per_clinician), queues: [[], []], exits: [[], [], [], []], leaving: [], leavingDocs: [],
+          counts: TYPES.map(() => ({ ref: 0, out: [0, 0, 0, 0], waitSum: 0, admitted: 0 })), series: { wait: [[], []], comp: [[], [], []], gave: [[], [], []] } };
+    progress = 0;
+  }
+
+  function stepWeek() {
+    const p = P, K = p.caseload_per_clinician;
+    const quit = 1 - Math.exp(-p.turnover_annual / 52), fill = [p.vacancy_weeks_general, p.vacancy_weeks_general * p.bilingual_vacancy_factor];
+    for (const post of S.posts) {
+      if (post.vacant > 0) { post.vacant--; if (post.vacant === 0) post.doc = newDoctor(post.bilingual); }
+      else if (rng() < quit) { post.vacant = geometric(1 / fill[post.bilingual ? 1 : 0]); sayBye(post); }
+    }
+    const lam = rates();
+    for (let t = 0; t < 3; t++) for (let i = 0, n = poisson(lam[t]); i < n; i++) {
+      const b = makeBlob(t); Object.assign(b, { arrive: S.week, stage: 0, weeksIn: 0, odds: 1 });
+      S.counts[t].ref++; S.queues[t === 0 ? 0 : 1].push(b);
+    }
+    const used = [0, 0], cap = [0, 0];
+    for (const post of S.posts) { const pool = post.bilingual ? 1 : 0; used[pool] += post.slots.filter(Boolean).length; if (post.vacant === 0) cap[pool] += K; }
+    const admit = (b, pool) => {
+      for (const post of S.posts) {
+        if ((post.bilingual ? 1 : 0) !== pool || post.vacant > 0) continue;
+        const idx = post.slots.indexOf(null);
+        if (idx < 0) continue;
+        post.slots[idx] = b;
+        const wait = S.week - b.arrive;
+        b.odds = Math.exp(p.wait_log_or_per_week * Math.min(wait, 12));
+        S.counts[b.type].waitSum += wait; S.counts[b.type].admitted++; used[pool]++; return true;
+      }
+      return false;
+    };
+    while (S.queues[0].length && used[1] < cap[1] && admit(S.queues[0][0], 1)) S.queues[0].shift();
+    while (S.queues[1].length && used[0] < cap[0] && admit(S.queues[1][0], 0)) S.queues[1].shift();
+    while (p.bilingual_spillover && S.queues[1].length && !S.queues[0].length && used[1] < cap[1] && admit(S.queues[1][0], 1)) S.queues[1].shift();
+    for (let q = 0; q < 2; q++) S.queues[q] = S.queues[q].filter(b => (rng() < p.renege_prob) ? (finish(b, 3), false) : true);
+    for (const post of S.posts) post.slots.forEach((b, idx) => {
+      if (!b) return;
+      const h = p.stage_probs[CHAIN_OF_TYPE[b.type]], row = h[b.stage].slice();
+      if (b.weeksIn < 4) {  // waiting multiplies this week's dropout odds; the other moves shrink to make room
+        const d = row[1], dn = d * b.odds / (1 - d + d * b.odds), sc = (1 - dn) / (1 - d);
+        for (let i = 0; i < 4; i++) row[i] *= sc;
+        row[1] = dn;
+      }
+      b.weeksIn++;
+      const adv = b.stage < h.length - 1 ? row[3] : 0, u = rng();
+      let c = row[0], k = -1;
+      if (u < c) k = 0; else if (u < (c += row[1])) k = 1; else if (u < (c += row[2])) k = 2; else if (u < c + adv) b.stage++;
+      if (k >= 0) { post.slots[idx] = null; finish(b, k); }
+    });
+    S.week++;
+    for (const ex of S.exits) while (ex.length && (S.week - ex[0].landed > RECENT || ex.length > EX_COLS * EX_ROWS)) leave(ex.shift());
+    record(); place(); renderTexts();
+  }
+  function finish(b, k) { S.counts[b.type].out[k]++; b.mood = k === 0 ? 1 : k === 3 ? 2 : 0; b.landed = S.week + 1; S.exits[k].push(b); }
+  function leave(b) { S.leaving.push(b); moveTo(b, W + 40, b.ty + (Math.random() - 0.5) * 40, 0.6); b.st = 0.6; b.zone = "gone"; }
+  function record() {
+    S.series.wait[0].push(S.queues[0].length); S.series.wait[1].push(S.queues[1].length);
+    S.counts.forEach((c, t) => {
+      const done = c.out.reduce((a, b) => a + b, 0);
+      // Shares wait for five finished referrals, so the first exits don't swing the line from 0 to 100
+      S.series.comp[t].push(done >= 5 ? 100 * c.out[0] / done : null);
+      S.series.gave[t].push(done >= 5 ? 100 * c.out[3] / done : null);
+    });
+  }
+  // Routes keep blobs on the walkways: right to the gap, down under the rooms, then up into a room or along to the exits
+  function place() {
+    S.queues.forEach((q, qi) => q.forEach((b, i) => { const [x, y] = queueXY(qi, i); moveTo(b, x, y); b.st = i < Q_SHOW ? 1 : 0; b.r = 9.5; b.zone = "queue"; }));
+    S.posts.forEach((post, j) => post.slots.forEach((b, i) => {
+      if (!b) return;
+      const [x, y] = slotXY(j, i), [cx, cy] = posAt(b, clock);
+      moveTo(b, x, y, 0.4, b.zone === "room" ? [] : [[GAP_X, cy], [GAP_X, CORR_Y], [x, CORR_Y]]);
+      b.r = S.layout.r; b.st = 1; b.zone = "room";
+    }));
+    S.exits.forEach((ex, k) => ex.forEach((b, i) => {
+      const [x, y] = exitXY(k, i), [cx, cy] = posAt(b, clock);
+      const via = b.zone === "exit" ? [] : b.zone === "room" ? [[cx, CORR_Y], [LANE_X, CORR_Y], [LANE_X, y]]
+        : [[GAP_X, cy], [GAP_X, CORR_Y], [LANE_X, CORR_Y], [LANE_X, y]];
+      moveTo(b, x, y, b.zone === "exit" ? 0 : 0.4, via); b.r = 8; b.st = 1; b.zone = "exit";
+    }));
+  }
+  function everyBlob() {
+    const out = [];
+    S.queues.forEach(q => out.push(...q)); S.posts.forEach(p => p.slots.forEach(b => b && out.push(b))); S.exits.forEach(e => out.push(...e));
+    return out.concat(S.leaving);
+  }
+  function animate(dt) {
+    for (const b of everyBlob()) {
+      const [x, y] = posAt(b, clock);
+      b.vx = (x - b.x) / Math.max(dt, 1e-3); b.vy = (y - b.y) / Math.max(dt, 1e-3); b.x = x; b.y = y;
+      const started = clock >= b.t0, want = started || b.alpha > 0.01 ? b.st : 0;
+      if (reduceMotion) { b.s = want; b.alpha = 1; }
+      else {
+        b.sv += (want - b.s) * 70 * dt; b.sv *= Math.exp(-dt * 9); b.s = Math.max(0, b.s + b.sv * dt);  // soft spring: grows in with a small overshoot
+        if (started) b.alpha = Math.min(1, b.alpha + dt * 2.2);
+      }
+      if (playing && !reduceMotion) { b.blink -= dt; if (b.blink < -0.12) b.blink = 2 + Math.random() * 5; }
+    }
+    S.leaving = S.leaving.filter(b => clock < b.t0 + b.dur + 0.1);
+    for (const post of S.posts) if (post.doc) {
+      const d = post.doc;
+      if (playing && !reduceMotion) { d.blink -= dt; if (d.blink < -0.14) d.blink = 2.5 + Math.random() * 4; }
+      if (reduceMotion) { d.yoff = 0; d.alpha = 1; continue; }
+      d.vy += (0 - d.yoff) * 90 * dt; d.vy *= Math.exp(-dt * 7); d.yoff += d.vy * dt; d.alpha = Math.min(1, d.alpha + dt * 3);
+    }
+    for (const d of S.leavingDocs) if (clock > d.leaveAt) { d.vy -= 260 * dt; d.yoff += d.vy * dt; d.alpha = Math.max(0, d.alpha - dt * 1.6); }
+    S.leavingDocs = S.leavingDocs.filter(d => d.alpha > 0);
+  }
+
+  // Drawing -------------------------------------------------------------------------------------------------
+  function blobPath(ctx, type, r, t, phase) {
+    ctx.beginPath();
+    for (let i = 0; i <= 36; i++) {
+      const th = i / 36 * Math.PI * 2;
+      let rr = r;
+      if (type === 0) rr = r * (0.92 + 0.42 * Math.max(0, -Math.sin(th)) ** 6);                      // drop with a pointed top
+      else if (type === 2) rr = r * 0.9 / (Math.abs(Math.cos(th)) ** 4 + Math.abs(Math.sin(th)) ** 4) ** 0.25;  // soft square
+      rr *= 1 + (reduceMotion ? 0 : 0.045 * Math.sin(3 * th + t * 2.6 + phase));
+      const x = Math.cos(th) * rr, y = Math.sin(th) * rr * 0.94;
+      i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    }
+    ctx.closePath();
+  }
+  function eyes(ctx, r, look, mood, blink, body) {
+    for (const side of [-1, 1]) {
+      const ex = side * r * 0.34, ey = -r * 0.12, er = r * 0.27;
+      if (mood === 1) { ctx.strokeStyle = "#fff"; ctx.lineWidth = r * 0.14; ctx.lineCap = "round"; ctx.beginPath(); ctx.arc(ex, ey + er * 0.3, er * 0.7, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke(); continue; }
+      const closed = blink < 0;
+      ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.ellipse(ex, ey, er, closed ? er * 0.15 : er, 0, 0, 6.29); ctx.fill();
+      if (closed) continue;
+      ctx.fillStyle = INK; ctx.beginPath(); ctx.arc(ex + look[0] * er * 0.4, ey + look[1] * er * 0.4 + (mood === 2 ? er * 0.4 : 0), er * 0.5, 0, 6.29); ctx.fill();
+      if (mood === 2) { ctx.fillStyle = body; ctx.fillRect(ex - er, ey - er - 1, er * 2, er * 0.9); }
+    }
+  }
+  function drawBlob(ctx, b, t) {
+    const r = b.r * b.s;
+    if (r < 0.4 || b.alpha <= 0) return;
+    const speed = Math.hypot(b.vx, b.vy), stretch = reduceMotion ? 0 : Math.min(0.22, speed / 1400);
+    ctx.save(); ctx.globalAlpha = b.alpha; ctx.translate(b.x, b.y);
+    ctx.fillStyle = "rgba(28,35,51,.09)"; ctx.beginPath(); ctx.ellipse(0, r * 0.98, r * 0.85, r * 0.24, 0, 0, 6.29); ctx.fill();
+    const ang = Math.atan2(b.vy, b.vx);
+    ctx.rotate(ang); ctx.scale(1 + stretch, 1 - stretch * 0.7); ctx.rotate(-ang);
+    blobPath(ctx, b.type, r, t, b.phase);
+    ctx.fillStyle = COL[b.type]; ctx.fill(); ctx.lineWidth = Math.max(1, r * 0.13); ctx.strokeStyle = DARK[b.type]; ctx.stroke();
+    if (r > 4) eyes(ctx, r, speed > 10 ? [b.vx / speed, b.vy / speed] : [0.3, 0.1], b.mood, b.blink, COL[b.type]);
+    ctx.restore();
+  }
+  function drawDoctor(ctx, d, x, y, r, t) {
+    if (d.alpha <= 0) return;
+    const bob = reduceMotion ? 0 : Math.sin(t * 2.2 + d.phase) * 1.2, R = r * d.size;
+    ctx.save(); ctx.globalAlpha = d.alpha; ctx.translate(x, y + d.yoff + bob);
+    ctx.fillStyle = "rgba(28,35,51,.10)"; ctx.beginPath(); ctx.ellipse(0, R * 0.98 - d.yoff, R * 0.8, R * 0.22, 0, 0, 6.29); ctx.fill();
+    blobPath(ctx, 1, R, t, d.phase);
+    ctx.fillStyle = DOC_COL[d.hue]; ctx.fill();
+    ctx.save(); ctx.clip();                                                  // white coat over the lower body, with lapels
+    ctx.fillStyle = "#fbfcfe"; ctx.fillRect(-R * 1.2, R * 0.32, R * 2.4, R);
+    ctx.fillStyle = DOC_COL[d.hue]; ctx.beginPath(); ctx.moveTo(-R * 0.22, R * 0.3); ctx.lineTo(0, R * 0.7); ctx.lineTo(R * 0.22, R * 0.3); ctx.fill();
+    ctx.restore();
+    blobPath(ctx, 1, R, t, d.phase); ctx.lineWidth = Math.max(1.2, R * 0.1); ctx.strokeStyle = DOC_DARK[d.hue]; ctx.stroke();
+    eyes(ctx, R, [0, 0.25], 0, d.blink, DOC_COL[d.hue]);
+    if (d.acc === 1) { ctx.strokeStyle = INK; ctx.lineWidth = R * 0.07; for (const s of [-1, 1]) { ctx.beginPath(); ctx.arc(s * R * 0.34, -R * 0.12, R * 0.33, 0, 6.29); ctx.stroke(); } }
+    if (d.acc === 2) { ctx.strokeStyle = DOC_DARK[d.hue]; ctx.lineWidth = R * 0.12; ctx.lineCap = "round"; for (const s of [-0.25, 0, 0.25]) { ctx.beginPath(); ctx.moveTo(s * R, -R * 0.9); ctx.quadraticCurveTo(s * R + R * 0.15, -R * 1.25, s * R + R * 0.05, -R * 1.35); ctx.stroke(); } }
+    if (d.acc === 3) { ctx.strokeStyle = "#6b7280"; ctx.lineWidth = R * 0.08; ctx.beginPath(); ctx.moveTo(-R * 0.45, R * 0.35); ctx.quadraticCurveTo(-R * 0.4, R * 0.85, R * 0.1, R * 0.75); ctx.stroke(); ctx.fillStyle = "#9aa3b2"; ctx.beginPath(); ctx.arc(R * 0.14, R * 0.74, R * 0.11, 0, 6.29); ctx.fill(); }
+    // Head mirror: a band across the forehead and the round reflector
+    ctx.strokeStyle = "#5c6575"; ctx.lineWidth = R * 0.08; ctx.beginPath(); ctx.arc(0, R * 0.1, R * 0.93, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke();
+    ctx.fillStyle = "#dfe4ec"; ctx.strokeStyle = "#7d8798"; ctx.lineWidth = R * 0.07;
+    ctx.beginPath(); ctx.arc(-R * 0.18, -R * 0.62, R * 0.27, 0, 6.29); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(-R * 0.25, -R * 0.69, R * 0.08, 0, 6.29); ctx.fill();
+    ctx.restore();
+    if (d.bubble && clock < d.bubbleUntil) {
+      ctx.save(); ctx.globalAlpha = Math.min(d.alpha, clamp((d.bubbleUntil - clock) * 3, 0, 1));
+      ctx.font = `600 20px ${HAND}`; const tw = ctx.measureText(d.bubble).width;
+      const bx = x + R * 0.6, by = y + d.yoff - R * 2.2;
+      ctx.fillStyle = "#fff"; ctx.strokeStyle = INK; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.roundRect(bx, by - 20, tw + 16, 26, 12); ctx.fill(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(bx + 6, by + 6); ctx.lineTo(bx - 2, by + 14); ctx.lineTo(bx + 14, by + 6); ctx.fill();
+      txt(ctx, d.bubble, bx + 8, by, { font: HAND, size: 20, weight: 600 });
+      ctx.restore();
+    }
+  }
+  function txt(ctx, s, x, y, o = {}) {
+    ctx.fillStyle = o.color || INK; ctx.textAlign = o.align || "left"; ctx.textBaseline = o.base || "alphabetic";
+    let size = o.size || 14;
+    ctx.font = `${o.weight || 600} ${size}px ${o.font || SANS}`;
+    if (o.max) while (size > 8 && ctx.measureText(s).width > o.max) { size -= 0.5; ctx.font = `${o.weight || 600} ${size}px ${o.font || SANS}`; }  // shrink to fit narrow rooms
+    ctx.fillText(s, x, y);
+  }
+  function roundedPoints(x, y, w, h, R, step = 12) {
+    const pts = [], edge = (x0, y0, x1, y1) => { const n = Math.max(1, Math.round(Math.hypot(x1 - x0, y1 - y0) / step)); for (let i = 0; i < n; i++) pts.push([x0 + (x1 - x0) * i / n, y0 + (y1 - y0) * i / n]); };
+    const arc = (cx, cy, a0) => { for (let i = 0; i < 4; i++) { const a = a0 + i * Math.PI / 8; pts.push([cx + R * Math.cos(a), cy + R * Math.sin(a)]); } };
+    edge(x + R, y, x + w - R, y); arc(x + w - R, y + R, -Math.PI / 2); edge(x + w, y + R, x + w, y + h - R); arc(x + w - R, y + h - R, 0);
+    edge(x + w - R, y + h, x + R, y + h); arc(x + R, y + h - R, Math.PI / 2); edge(x, y + h - R, x, y + R); arc(x + R, y + R, Math.PI);
+    return pts;
+  }
+  // Hand-drawn box: a rounded outline traced twice with a slow wobble, fixed per box so it doesn't shimmer
+  function sketchBox(ctx, x, y, w, h, seed, fill, stroke = INK, lw = 1.6, dashed = false) {
+    if (fill) { ctx.fillStyle = fill; ctx.beginPath(); ctx.roundRect(x, y, w, h, 14); ctx.fill(); }
+    const pts = roundedPoints(x, y, w, h, Math.min(14, w / 3));
+    ctx.strokeStyle = stroke; ctx.lineWidth = lw; ctx.lineCap = "round"; ctx.lineJoin = "round"; if (dashed) ctx.setLineDash([6, 6]);
+    for (let pass = 0; pass < 2; pass++) {
+      const r = mulberry32(seed * 7 + pass), a = r() * 6.28, b = r() * 6.28, amp = pass ? 1.6 : 0.9, n = pts.length;
+      ctx.globalAlpha = pass ? 0.35 : 0.9; ctx.beginPath();
+      for (let i = 0; i <= n + (pass ? 3 : 1); i++) {   // the second stroke overshoots its start a little, like a pen would
+        const [px, py] = pts[i % n], qx = px + amp * Math.sin(i * 0.45 + a), qy = py + amp * Math.cos(i * 0.37 + b);
+        i ? ctx.lineTo(qx, qy) : ctx.moveTo(qx, qy);
+      }
+      ctx.stroke();
+    }
+    ctx.setLineDash([]); ctx.globalAlpha = 1;
+  }
+  function sketchArrow(ctx, pts, color = INK2) {
+    ctx.strokeStyle = color; ctx.lineWidth = 1.8; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(...pts[0]); ctx.quadraticCurveTo(...pts[1], ...pts[2]); ctx.stroke();
+    const a = Math.atan2(pts[2][1] - pts[1][1], pts[2][0] - pts[1][0]);
+    for (const d of [-0.5, 0.5]) { ctx.beginPath(); ctx.moveTo(...pts[2]); ctx.lineTo(pts[2][0] - 10 * Math.cos(a + d), pts[2][1] - 10 * Math.sin(a + d)); ctx.stroke(); }
+  }
+  function fitCanvas(c, ctx, lw, lh) {
+    const dpr = window.devicePixelRatio || 1, cw = c.clientWidth, ch = c.clientHeight;
+    if (!cw || !ch) return false;
+    if (c.width !== Math.round(cw * dpr) || c.height !== Math.round(ch * dpr)) { c.width = Math.round(cw * dpr); c.height = Math.round(ch * dpr); }
+    ctx.setTransform(c.width / lw, 0, 0, c.height / lh, 0, 0);
+    return true;
+  }
+
+  function drawBoard(t) {
+    if (!bctx || !S || !fitCanvas(board, bctx, W, H)) return;
+    const ctx = bctx; ctx.clearRect(0, 0, W, H);
+    txt(ctx, "New referrals", 22, 206, { font: ROUND, size: 18 });
+    txt(ctx, `about ${P.referrals_per_week.toFixed(1)} a week`, 22, 226, { color: INK2, size: 13 });
+    for (const [q, y, a, b, seed] of [[0, 56, "Waiting for a", "bilingual clinician", 11], [1, 344, "Waiting for", "any clinician", 12]]) {
+      sketchBox(ctx, 172, y - 28, 238, 206, seed, q === 0 ? "#fff6ef" : "#f3f6fb", q === 0 ? DARK[0] : INK);
+      const n = S.queues[q].length;
+      ctx.font = `600 22px ${ROUND}`; const room = 396 - ctx.measureText(String(n)).width - 12 - 188;
+      if (q === 1) txt(ctx, `${a} ${b}`, 188, y + 4, { font: ROUND, size: 15, max: room });
+      else { txt(ctx, a, 188, y, { font: ROUND, size: 15 }); txt(ctx, b, 188, y + 18, { font: ROUND, size: 15 }); }
+      txt(ctx, String(n), 396, y + 4, { font: ROUND, size: 22, align: "right", color: n ? INK : INK2 });
+      if (n > Q_SHOW) txt(ctx, `+${n - Q_SHOW} more waiting, not drawn`, 291, y + 164, { size: 12, align: "center", color: INK2, weight: 800 });
+    }
+    const L = S.layout, docR = clamp(L.w * 0.2, 10, 18);
+    if (!S.posts.length) txt(ctx, "No clinicians on staff", (ROOMS_X0 + ROOMS_X1) / 2, ROOMS_Y + ROOM_H / 2, { font: ROUND, color: INK2, size: 17, align: "center" });
+    S.posts.forEach((post, j) => {
+      const x = roomX(j), vac = post.vacant > 0, narrow = L.w < 110, cx = x + L.w / 2;
+      sketchBox(ctx, x, ROOMS_Y, L.w, ROOM_H, 30 + j, vac ? "#eceef2" : (post.bilingual ? "#fff6ef" : "#f3f6fb"), post.bilingual ? DARK[0] : INK, post.bilingual ? 2.2 : 1.6);
+      const line1 = narrow ? `#${j + 1}` : `Clinician ${j + 1}`;
+      const line2 = vac ? (narrow ? "hiring" : `hiring, ${post.vacant} wk`) : (post.bilingual ? (narrow ? "Spanish" : "speaks Spanish") : (narrow ? "English" : "English only"));
+      txt(ctx, line1, cx, ROOMS_Y + 34, { font: ROUND, size: 14, align: "center", max: L.w - 10 });
+      txt(ctx, line2, cx, ROOMS_Y + 50, { size: 12, align: "center", color: vac ? INK : INK2, weight: vac ? 800 : 600, max: L.w - 10 });
+      for (let i = 0; i < post.slots.length; i++) {
+        const [sx, sy] = slotXY(j, i);
+        ctx.fillStyle = "rgba(28,35,51,.13)"; ctx.beginPath(); ctx.arc(sx, sy, Math.max(1.2, L.r * 0.2), 0, 6.29); ctx.fill();
+      }
+      if (vac) {
+        ctx.save(); ctx.setLineDash([4, 4]); ctx.strokeStyle = INK2; ctx.lineWidth = 1.4;
+        ctx.beginPath(); ctx.arc(cx, ROOMS_Y - 4, docR, 0, 6.29); ctx.stroke(); ctx.restore();
+        txt(ctx, `${post.vacant}w`, cx, ROOMS_Y, { font: ROUND, size: 12, align: "center", color: INK2, max: docR * 1.8 });
+      }
+    });
+    EXITS.forEach((name, k) => {
+      sketchBox(ctx, EX_X, EX_Y[k], EX_W, EX_H, 50 + k, "#ffffff", INK, 1.4);
+      txt(ctx, name, EX_X + 14, EX_Y[k] + 25, { font: ROUND, size: 16 });
+      txt(ctx, String(S.counts.reduce((a, c) => a + c.out[k], 0)), EX_X + EX_W - 14, EX_Y[k] + 25, { font: ROUND, size: 18, align: "right" });
+    });
+    drawShareBars(ctx);
+    for (const b of everyBlob().sort((a, b) => a.y - b.y)) drawBlob(ctx, b, t);
+    S.posts.forEach((post, j) => { if (post.doc) drawDoctor(ctx, post.doc, roomX(j) + L.w / 2, ROOMS_Y - 4, docR, t); });
+    for (const d of S.leavingDocs) drawDoctor(ctx, d, d.x, ROOMS_Y - 4, docR, t);
+    if (ui.notes.checked) {
+      const note = (s, x, y, o = {}) => txt(ctx, s, x, y, { font: HAND, size: 21, weight: 600, color: o.color || INK2, align: o.align });
+      note("they hop in", 22, 354); note("from the left", 22, 376); sketchArrow(ctx, [[70, 340], [96, 300], [146, 280]]);
+      note("orange", 22, 100, { color: DARK[0] }); note("blobs only", 22, 122, { color: DARK[0] }); sketchArrow(ctx, [[104, 108], [136, 104], [164, 118]], DARK[0]);
+      note("each dot is a caseload slot", (ROOMS_X0 + ROOMS_X1) / 2, CORR_Y + 36, { align: "center" });
+      note("exits keep the last 10 weeks, bars count every exit", BAR_X + BAR_W, EX_Y[3] + EX_H + 30, { align: "right" });
+    }
+    if (barHover) drawBarTip(ctx);
+  }
+
+  // Beside each exit box, a bar filled to that exit's share of every exit so far, split by group
+  const BAR_X = EX_X + EX_W + 12, BAR_W = 40;
+  function drawShareBars(ctx) {
+    const all = S.counts.reduce((a, c) => a + c.out.reduce((x, y) => x + y, 0), 0);
+    S.barHits = [];
+    EXITS.forEach((_, k) => {
+      const y0 = EX_Y[k], top = y0 + 30, bot = y0 + EX_H - 8, full = bot - top;
+      const n = S.counts.reduce((a, c) => a + c.out[k], 0), share = all ? n / all : 0;
+      sketchBox(ctx, BAR_X, y0, BAR_W, EX_H, 70 + k, "#ffffff", INK, 1.4);
+      txt(ctx, pc(share), BAR_X + BAR_W / 2, y0 + 22, { font: ROUND, size: 14, align: "center", max: BAR_W - 6 });
+      ctx.fillStyle = "rgba(28,35,51,.06)"; ctx.beginPath(); ctx.roundRect(BAR_X + 8, top, BAR_W - 16, full, 4); ctx.fill();
+      let y = bot;
+      S.counts.forEach((c, t) => {
+        const hgt = all ? full * c.out[k] / all : 0;
+        if (hgt < 0.5) return;
+        const on = barHover && barHover.k === k && barHover.t === t;
+        ctx.fillStyle = COL[t]; ctx.beginPath(); ctx.roundRect(BAR_X + 8, y - hgt, BAR_W - 16, Math.max(1, hgt - (y === bot ? 0 : 2)), 3); ctx.fill();
+        if (on) { ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.stroke(); }
+        S.barHits.push({ k, t, y0: y - hgt, y1: y });
+        y -= hgt;
+      });
+    });
+  }
+  // Hovering (or tapping) a colored piece of a bar shows how much of that exit, and of every exit, that group makes up
+  const BAR_NAMES = ["Orange: Latino, prefers Spanish", "Blue: Latino, English-proficient", "Slate: non-Latino"];
+  let barHover = null;
+  function drawBarTip(ctx) {
+    const all = S.counts.reduce((a, c) => a + c.out.reduce((x, y) => x + y, 0), 0);
+    const { k, t } = barHover, hit = S.barHits.find(h => h.k === k && h.t === t);
+    if (!hit) { barHover = null; return; }
+    const n = S.counts[t].out[k], inExit = S.counts.reduce((a, c) => a + c.out[k], 0);
+    const lines = [BAR_NAMES[t], `${pc(inExit ? n / inExit : 0)} of ${EXITS[k].toLowerCase()} (${n} of ${inExit})`, `${pc(all ? n / all : 0)} of all exits`];
+    const w = 268, h = 74, x = BAR_X - w - 8, y = clamp((hit.y0 + hit.y1) / 2 - h / 2, 4, H - h - 4);
+    ctx.fillStyle = "#ffffff"; ctx.strokeStyle = INK; ctx.lineWidth = 1.6;
+    ctx.beginPath(); ctx.roundRect(x, y, w, h, 10); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = COL[t]; ctx.beginPath(); ctx.arc(x + 16, y + 20, 6, 0, 6.29); ctx.fill();
+    txt(ctx, lines[0], x + 28, y + 25, { font: ROUND, size: 14, max: w - 38 });
+    txt(ctx, lines[1], x + 12, y + 46, { size: 13, max: w - 22 });
+    txt(ctx, lines[2], x + 12, y + 64, { size: 13, color: INK2, max: w - 22 });
+  }
+  function barPointer(e) {
+    if (!S || !S.barHits) return;
+    const r = board.getBoundingClientRect(), x = (e.clientX - r.left) * W / r.width, y = (e.clientY - r.top) * H / r.height;
+    const hit = x >= BAR_X && x <= BAR_X + BAR_W ? S.barHits.find(h => y >= h.y0 - 1 && y <= h.y1 + 1) : null;
+    barHover = hit ? { k: hit.k, t: hit.t } : null;
+    board.style.cursor = hit ? "pointer" : "";
+  }
+  board.addEventListener("pointermove", barPointer);
+  board.addEventListener("pointerdown", barPointer);
+  board.addEventListener("pointerleave", () => { barHover = null; board.style.cursor = ""; });
+
+  // Charts --------------------------------------------------------------------------------------------------
+  const DASH = [[], [7, 4], [2, 4]], SHORT = ["Spanish", "Latino-Eng", "Non-Latino"];
+  const CHARTS = [
+    { id: "c0", unit: "", series: () => [[S.series.wait[0], 0, [], "Bilingual"], [S.series.wait[1], 1, [7, 4], "Any"]] },
+    { id: "c1", unit: "%", series: () => S.series.comp.map((s, t) => [s, t, DASH[t], SHORT[t]]) },
+    { id: "c2", unit: "%", series: () => S.series.gave.map((s, t) => [s, t, DASH[t], SHORT[t]]) },
+  ].map(c => ({ ...c, el: $(c.id), ctx: $(c.id).getContext && $(c.id).getContext("2d"), hover: null }));
+  const niceMax = v => { if (v <= 0) return 1; const p = 10 ** Math.floor(Math.log10(v)), m = v / p; return (m <= 1 ? 1 : m <= 2 ? 2 : m <= 5 ? 5 : 10) * p; };
+  function drawChart(c) {
+    if (!c.ctx || !S || !c.el.offsetParent) return;
+    const w = c.el.clientWidth, h = c.el.clientHeight;
+    if (!fitCanvas(c.el, c.ctx, w, h)) return;
+    const ctx = c.ctx; ctx.clearRect(0, 0, w, h);
+    const ser = c.series(), n = S.week, pad = { l: 36, r: 104, t: 8, b: 22 };
+    const ymax = niceMax(Math.max(c.unit ? 10 : 4, ...ser.flatMap(s => s[0].filter(v => v !== null))));
+    const X = i => pad.l + (n > 1 ? i / (n - 1) : 0) * (w - pad.l - pad.r), Y = v => h - pad.b - v / ymax * (h - pad.t - pad.b);
+    ctx.strokeStyle = RULE; ctx.lineWidth = 1;
+    for (const f of [0, 0.5, 1]) {
+      const y = Y(ymax * f); ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(w - pad.r, y); ctx.stroke();
+      txt(ctx, `${+(ymax * f).toFixed(1)}${c.unit}`, pad.l - 6, y, { color: INK2, size: 11, align: "right", base: "middle" });
+    }
+    txt(ctx, `week ${n}`, w - pad.r, h - 5, { color: INK2, size: 11, align: "right" });
+    if (!n) { txt(ctx, "starts when the clinic runs", (pad.l + w - pad.r) / 2, Y(ymax * 0.25) - 4, { font: HAND, color: INK2, size: 18, align: "center" }); return; }
+    const ends = [];
+    for (const [data, t, dash, name] of ser) {
+      ctx.strokeStyle = COL[t]; ctx.lineWidth = 2.2; ctx.setLineDash(dash); ctx.lineJoin = "round"; ctx.beginPath();
+      let started = false, lastV = null;
+      data.forEach((v, i) => { if (v === null) return; const x = X(i), y = Y(v); started ? ctx.lineTo(x, y) : ctx.moveTo(x, y); started = true; lastV = v; });
+      ctx.stroke(); ctx.setLineDash([]);
+      if (lastV !== null) ends.push({ y: Y(lastV), name, v: lastV });
+    }
+    ends.sort((a, b) => a.y - b.y);
+    for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 13) ends[i].y = ends[i - 1].y + 13;  // keep end labels apart
+    const over = ends.length ? ends[ends.length - 1].y - (h - pad.b) : 0;
+    if (over > 0) ends.forEach(e => { e.y -= over; });
+    for (const e of ends) txt(ctx, `${e.name} ${c.unit ? Math.round(e.v) + "%" : Math.round(e.v)}`, w - pad.r + 6, e.y, { size: 11, base: "middle", weight: 800 });
+    if (c.hover !== null) {
+      const i = clamp(Math.round((c.hover - pad.l) / (w - pad.l - pad.r) * (n - 1)), 0, n - 1), x = X(i);
+      ctx.strokeStyle = INK2; ctx.beginPath(); ctx.moveTo(x, pad.t); ctx.lineTo(x, h - pad.b); ctx.stroke();
+      const lines = [`Week ${i + 1}`, ...ser.map(([d, , , name]) => `${name}: ${d[i] === null ? "n/a" : c.unit ? d[i].toFixed(1) + "%" : d[i]}`)];
+      ctx.font = `600 11px ${SANS}`;
+      const bw = Math.max(...lines.map(l => ctx.measureText(l).width)) + 14, bh = lines.length * 15 + 8, bx = x + bw + 10 > w ? x - bw - 8 : x + 8;
+      ctx.fillStyle = "rgba(255,255,255,.97)"; ctx.beginPath(); ctx.roundRect(bx, pad.t, bw, bh, 8); ctx.fill(); ctx.strokeStyle = RULE; ctx.stroke();
+      lines.forEach((l, j) => txt(ctx, l, bx + 7, pad.t + 17 + j * 15, { size: 11, weight: j ? 600 : 800 }));
+    }
+  }
+  for (const c of CHARTS) {
+    c.el.addEventListener("pointermove", e => { c.hover = e.clientX - c.el.getBoundingClientRect().left; });
+    c.el.addEventListener("pointerleave", () => { c.hover = null; });
+  }
+
+  // Text ----------------------------------------------------------------------------------------------------
+  function renderTexts() {
+    ui.tbody.innerHTML = S.counts.map((c, t) => {
+      const done = c.out.reduce((a, b) => a + b, 0), p = v => c.ref ? `${(100 * v / c.ref).toFixed(0)}%` : "n/a";
+      return `<tr><th scope="row">${TYPES[t]}</th><td>${c.ref}</td><td>${c.ref - done}</td><td>${p(c.out[0])}</td><td>${p(c.out[1])}</td><td>${p(c.out[2])}</td><td>${p(c.out[3])}</td><td>${c.admitted ? (c.waitSum / c.admitted).toFixed(1) : "n/a"}</td></tr>`;
+    }).join("");
+    const vac = S.posts.filter(p => p.vacant > 0).length;
+    ui.week.textContent = `Week ${S.week} · ${DATA.communities[comm].name} · ${vac ? `${vac} post${vac > 1 ? "s" : ""} vacant` : "all posts filled"}`;
+    $$(".js-quit").forEach(b => { b.disabled = !S.posts.some(p => p.bilingual && p.vacant === 0); });
+    $$(".js-hire").forEach(b => { b.disabled = S.posts.length >= 6 && !S.posts.some(p => p.bilingual && p.vacant > 0); });
+  }
+  function renderFacts() {
+    const c = DATA.communities[comm], o = c.observed;
+    const chains = c.cbsa == null ? "Treatment chains: the statewide fit."
+      : Object.values(c.chain_source).every(v => v.startsWith("fitted")) ? "Both treatment chains are fitted to this area's episodes."
+      : `Treatment chains: Latino ${c.chain_source.Hispanic}, non-Latino ${c.chain_source["Non-Hispanic"]}.`;
+    const html = c.n
+      ? `<b>${esc(c.name)}.</b> ${c.n.toLocaleString()} outpatient episodes in TEDS-D 2024, ${pc(c.latino_share)} Latino. ${pc(c.wait_8plus_days)} of patients waited 8+ days to start. Completed: Latino ${pc(o.Hispanic.completed)}, non-Latino ${pc(o["Non-Hispanic"].completed)}. ${esc(chains)} About ${sourcedReferrals(c).toFixed(1)} referrals a week.`
+      : `<b>${esc(c.name)}.</b> ${esc(c.note)}`;
+    $$(".js-facts").forEach(el => { el.innerHTML = html; });
+  }
+
+  // Settings ------------------------------------------------------------------------------------------------
+  const GROUPS = [
+    { title: "Who arrives", items: [
+      { key: "referrals_per_week", label: "People referred per week", min: 0.5, max: 15, step: 0.1, live: true, fmt: v => v.toFixed(1),
+        help: "The main volume knob. When more people arrive than slots open up, both lines grow.",
+        src: c => `Set so this area's simulated waits match TEDS-D (${pc(c.wait_8plus_days)} waited 8+ days): ${sourcedReferrals(c).toFixed(1)}` },
+      { key: "latino_share", label: "Latino share of referrals", min: 0, max: 1, step: 0.01, live: true, fmt: pc,
+        help: "Splits arrivals between Latino and non-Latino blobs. The total stays the same.", src: c => `TEDS-D 2024 for this area: ${pc(c.latino_share)}` },
+      { key: "spanish_pref_share", label: "Latinos who need Spanish", min: 0, max: 1, step: 0.01, live: true, fmt: pc,
+        help: "Of the Latino arrivals, the share who need a Spanish-speaking clinician. Only these join the bilingual line.",
+        src: c => `${c.name.startsWith("San Benito") ? "San Benito County plan" : "ACS 2021, statewide"}: ${pc(c.spanish_pref_share)}` },
+    ]},
+    { title: "Clinic size", items: [
+      { key: "general", label: "English-only clinicians", stepper: true, min: 0, max: 4, help: "Any blob except orange ones can take their slots.", src: () => "the standard clinic has 2 of 3" },
+      { key: "bilingual", label: "Bilingual clinicians", stepper: true, min: 0, max: 4, help: "The only rooms orange blobs can enter. Others use spare slots here.", src: () => "the standard clinic has 1 of 3" },
+      { key: "caseload_per_clinician", label: "Caseload per clinician", min: 5, max: 60, step: 1, live: false, fmt: v => String(v), help: "Slots in each room. More slots, shorter lines.", src: () => "counselor survey mean: 30" },
+    ]},
+    { title: "Waiting", items: [
+      { key: "renege_prob", label: "Weekly chance of giving up", min: 0, max: 0.8, step: 0.01, live: true, fmt: pc,
+        help: "Each week, this share of the people still in a line leaves for good.", src: () => "about one month of patience (Kaplan & Johri): 21%" },
+      { key: "wait_log_or_per_week", label: "How much waiting hurts", min: 0, max: 1, step: 0.005, live: true, fmt: v => v.toFixed(3),
+        help: "Extra log-odds of dropping out per week waited, during the first four weeks of care.", src: () => "TEDS-D fit: 0.091 (NIATx clinics would imply 0.35)" },
+    ]},
+    { title: "Staff", items: [
+      { key: "turnover_annual", label: "Clinicians quitting per year", min: 0, max: 1.5, step: 0.01, live: true, fmt: pc,
+        help: "How often a clinician leaves. Their room takes no one new until a hire arrives.", src: () => "Eby et al. 2010: 33%" },
+      { key: "vacancy_weeks_general", label: "Weeks to fill a post", min: 1, max: 52, step: 0.5, live: true, fmt: v => v.toFixed(1),
+        help: "Average time a room sits empty after someone quits.", src: () => "county hiring takes one to three months: 8.7" },
+      { key: "bilingual_vacancy_factor", label: "Extra wait for a bilingual hire (×)", min: 1, max: 6, step: 0.1, live: true, fmt: v => `${v.toFixed(1)}×`,
+        help: "Multiplies the weeks to fill when the post needs a Spanish speaker.", src: () => "assumption: 1.5×" },
+    ]},
+  ];
+  const ALL = GROUPS.flatMap(g => g.items);
+  function buildSettings() {
+    ui.settings.innerHTML = GROUPS.map(g => `<div class="group"><h3>${g.title}</h3>${g.items.map(s => s.stepper
+      ? `<div class="stepper"><span class="lab" id="l_${s.key}">${s.label}</span><div class="row" role="group" aria-labelledby="l_${s.key}">
+           <button type="button" id="m_${s.key}" aria-label="Fewer ${s.label.toLowerCase()}">−</button><output id="o_${s.key}"></output>
+           <button type="button" id="p_${s.key}" aria-label="More ${s.label.toLowerCase()}">+</button></div>
+           <span class="help">${s.help} <button type="button" class="info" aria-expanded="false" aria-controls="r_${s.key}" aria-label="Where the value for ${s.label.toLowerCase()} comes from">i</button></span><span class="src" id="r_${s.key}" hidden></span></div>`
+      : `<div class="slider"><label for="s_${s.key}"><span>${s.label}</span><output id="o_${s.key}" for="s_${s.key}"></output></label>
+           <input type="range" id="s_${s.key}" min="${s.min}" max="${s.max}" step="${s.step}">
+           <span class="help">${s.help} <button type="button" class="info" aria-expanded="false" aria-controls="r_${s.key}" aria-label="Where the value for ${s.label.toLowerCase()} comes from">i</button></span><span class="src" id="r_${s.key}" hidden></span></div>`).join("")}</div>`).join("")
+      + `<div class="group"><label class="checkrow" for="s_spill" style="color:var(--ink)"><input type="checkbox" id="s_spill"> Lend idle bilingual slots</label>
+         <span class="help">Off: bilingual rooms hold their empty slots for orange blobs, even while the other line waits.</span></div>
+         <div class="group" style="text-align:center"><button id="resetParams" type="button">Back to sourced values</button><p class="fine" id="tuneState" style="margin:8px 0 0"></p></div>`;
+    for (const s of ALL) {
+      if (s.stepper) {
+        const set = d => { P[s.key] = clamp(P[s.key] + d, s.min, s.max); syncSettings(); restart(); };
+        $(`m_${s.key}`).addEventListener("click", () => set(-1)); $(`p_${s.key}`).addEventListener("click", () => set(1));
+      } else {
+        $(`s_${s.key}`).addEventListener("input", e => { P[s.key] = +e.target.value; $(`o_${s.key}`).textContent = s.fmt(P[s.key]); tuneState(); if (!s.live) restart(); });
+      }
+    }
+    for (const btn of ui.settings.querySelectorAll(".info")) btn.addEventListener("click", () => {
+      const box = $(btn.getAttribute("aria-controls")), open = btn.getAttribute("aria-expanded") !== "true";
+      btn.setAttribute("aria-expanded", open); box.hidden = !open;
+    });
+    $("s_spill").addEventListener("change", e => { P.bilingual_spillover = e.target.checked; tuneState(); });
+    $("resetParams").addEventListener("click", () => { P = sourced(DATA.communities[comm]); syncSettings(); restart(); });
+  }
+  function syncSettings() {
+    const c = DATA.communities[comm];
+    for (const s of ALL) {
+      if (s.stepper) { $(`o_${s.key}`).textContent = P[s.key]; $(`m_${s.key}`).disabled = P[s.key] <= s.min; $(`p_${s.key}`).disabled = P[s.key] >= s.max || P.general + P.bilingual >= 6; }
+      else { $(`s_${s.key}`).value = P[s.key]; $(`o_${s.key}`).textContent = s.fmt(P[s.key]); }
+      $(`r_${s.key}`).textContent = `Sourced: ${s.src(c)}`;
+    }
+    $("s_spill").checked = P.bilingual_spillover; tuneState();
+  }
+  function tuneState() {
+    const ref = sourced(DATA.communities[comm]);
+    const n = ALL.filter(s => Math.abs(P[s.key] - ref[s.key]) > 1e-9).length + (P.bilingual_spillover !== ref.bilingual_spillover);
+    $("tuneState").textContent = n ? `${n} setting${n > 1 ? "s" : ""} moved.` : "All at sourced values.";
+  }
+
+  // Events --------------------------------------------------------------------------------------------------
+  const eventNote = m => $$(".js-eventnote").forEach(el => { el.textContent = m; });
+  $$(".js-quit").forEach(btn => btn.addEventListener("click", () => {
+    const post = S.posts.find(p => p.bilingual && p.vacant === 0);
+    if (!post) return;
+    post.vacant = Math.max(1, Math.round(P.vacancy_weeks_general * P.bilingual_vacancy_factor));
+    sayBye(post);
+    eventNote(`A bilingual clinician quit in week ${S.week}. The room keeps its patients but takes no one new for ${post.vacant} weeks.`);
+    renderTexts(); if (!playing) setPlaying(true);
+  }));
+  $$(".js-hire").forEach(btn => btn.addEventListener("click", () => {
+    const empty = S.posts.find(p => p.bilingual && p.vacant > 0);
+    if (empty) {  // fill the open bilingual post first, before adding a room
+      empty.vacant = 0; empty.doc = newDoctor(true);
+      renderTexts();
+      eventNote(`The open bilingual post was filled in week ${S.week}. That room takes new patients again.`);
+      if (!playing) setPlaying(true);
+      return;
+    }
+    if (S.posts.length >= 6) return;
+    S.posts.push({ bilingual: true, vacant: 0, slots: new Array(P.caseload_per_clinician).fill(null), doc: newDoctor(true) });
+    P.bilingual++; S.layout = roomLayout(S.posts.length, P.caseload_per_clinician);
+    place(); syncSettings(); renderTexts();
+    eventNote(`A new bilingual clinician started in week ${S.week}. The clinic now has ${S.posts.length} clinicians.`);
+    if (!playing) setPlaying(true);
+  }));
+
+  // Loop, views, startup ------------------------------------------------------------------------------------
+  function loop(now) {
+    const dt = Math.min(0.05, (now - (last || now)) / 1000); last = now; clock += dt;
+    if (playing) { deco += dt; progress += dt * +ui.speed.value; while (progress >= 1) { progress -= 1; stepWeek(); } }
+    if (S && view !== "methods") { animate(dt); drawBoard(deco); CHARTS.forEach(drawChart); }
+    if (view === "methods") demoFrame(dt);
+    requestAnimationFrame(loop);
+  }
+  function setPlaying(on) { playing = on; ui.play.textContent = on ? "Pause" : "Play"; ui.play.setAttribute("aria-pressed", String(on)); ui.step.disabled = on; }
+  function restart() { newRun(); place(); renderTexts(); ui.week.textContent = `Week 0 · ${DATA.communities[comm].name}`; eventNote(""); }
+  function pickCommunity(i) {
+    comm = i;
+    ui.select.value = String(i); $("storySelect").value = String(i);
+    P = sourced(DATA.communities[i]); renderFacts(); syncSettings(); restart();
+  }
+  function route() {
+    const want = (location.hash || "#overview").slice(1), VIEWS = ["overview", "simulator", "methods"], before = view;
+    view = want.startsWith("sec-") ? "methods" : VIEWS.includes(want) ? want : "overview";
+    if (S && before !== view) setPlaying(false);  // switching tabs pauses the clinic
+    for (const v of VIEWS) { $(`v-${v}`).hidden = v !== view; $(`t-${v}`).setAttribute("aria-current", v === view ? "page" : "false"); }
+    if (view === "overview") { $("storyStage").append($("unit")); $("storyChartA").append($("ch0")); $("storyChartB").append($("ch2")); $("hiddenCharts").append($("ch1")); }
+    if (view === "simulator") { const row = document.createElement("div"); row.className = "chartrow"; row.append($("ch0"), $("ch1"), $("ch2")); $("modelStage").replaceChildren($("unit"), row); }
+    if (view === "methods") { setPlaying(false); loadMath(); }
+    if (!want.startsWith("sec-")) window.scrollTo(0, 0);
+  }
+  window.addEventListener("hashchange", () => {
+    if (!location.hash.startsWith("#sec-")) return route();
+    if (view !== "methods") route();
+    const el = document.getElementById(location.hash.slice(1)); if (el) el.scrollIntoView();
+  });
+
+  // Theory page -----------------------------------------------------------------------------------------------
+  let mathLoaded = false;
+  function loadMath() {
+    if (mathLoaded) return; mathLoaded = true;
+    window.MathJax = { tex: { inlineMath: [["\\(", "\\)"]] }, svg: { fontCache: "global" } };
+    const s = document.createElement("script"); s.src = "https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"; s.async = true; document.head.append(s);
+  }
+  function get(path) { return path.split(".").reduce((o, k) => (o == null ? o : o[k]), DATA.theory); }
+  function fillTheory() {
+    const T = DATA.theory;
+    T.hisp_wait = 1 - T.daywait_by_group.Hispanic["0"] / 100; T.nonhisp_wait = 1 - T.daywait_by_group["Non-Hispanic"]["0"] / 100;
+    $$("[data-v]").forEach(el => {
+      const [path, f] = el.dataset.v.split("|"), v = get(path);
+      el.textContent = v == null ? "n/a" : f === "int" ? Math.round(v).toLocaleString() : f === "pct" ? pc(v) : f !== undefined ? (+v).toFixed(+f) : String(v);
+    });
+    const h = T.fits.Hispanic.stage_probs, K = h.length;
+    const head = `<thead><tr><th scope="col">Phase</th><th scope="col">Complete</th><th scope="col">Drop out</th><th scope="col">Other exit</th><th scope="col">Advance</th><th scope="col">Stay</th><th scope="col">Weeks in phase</th></tr></thead>`;
+    $("qtable").innerHTML = head + "<tbody>" + h.map((r, j) => {
+      const stay = 1 - r[0] - r[1] - r[2] - (j < K - 1 ? r[3] : 0);
+      return `<tr><th scope="row">${j + 1}</th>${[r[0], r[1], r[2], j < K - 1 ? r[3] : 0, stay].map(v => `<td>${v.toFixed(4)}</td>`).join("")}<td>${(1 / (1 - stay)).toFixed(1)}</td></tr>`;
+    }).join("") + "</tbody>";
+    const rowB = g => { const f = T.fits[g], ci = f.absorption_ci; return `<tr><th scope="row">${g}</th>${[0, 1, 2].map(k => `<td>${pc(f.absorption[k])} <span class="fine">(${(ci[0][k] * 100).toFixed(1)} to ${(ci[1][k] * 100).toFixed(1)})</span></td>`).join("")}<td>${f.mean_weeks.toFixed(1)} <span class="fine">(${f.mean_weeks_ci[0].toFixed(1)} to ${f.mean_weeks_ci[1].toFixed(1)})</span></td></tr>`; };
+    $("btable").innerHTML = `<thead><tr><th scope="col">Group</th><th scope="col">Completed</th><th scope="col">Dropped out</th><th scope="col">Other exit</th><th scope="col">Mean weeks</th></tr></thead><tbody>${rowB("Hispanic")}${rowB("Non-Hispanic")}</tbody>`;
+    const ks = Object.keys(T.fits.Hispanic.bic);
+    $("bictable").innerHTML = `<thead><tr><th scope="col">K</th>${ks.map(k => `<th scope="col">${k}</th>`).join("")}</tr></thead><tbody>` +
+      ["Hispanic", "Non-Hispanic"].map(g => { const b = T.fits[g].bic, best = Math.min(...Object.values(b)); return `<tr><th scope="row">${g}</th>${ks.map(k => `<td${b[k] === best ? ' style="font-weight:800"' : ""}>${Math.round(b[k]).toLocaleString()}</td>`).join("")}</tr>`; }).join("") + "</tbody>";
+    $("metrotable").innerHTML = `<thead><tr><th scope="col">Area</th><th scope="col">Episodes</th><th scope="col">Latino</th><th scope="col">Waited 8+ days</th><th scope="col">Load ρ</th><th scope="col">Referrals/wk</th></tr></thead><tbody>` +
+      DATA.communities.filter(c => c.n).map(c => `<tr><th scope="row">${esc(c.name)}</th><td>${c.n.toLocaleString()}</td><td>${pc(c.latino_share)}</td><td>${(c.wait_8plus_days * 100).toFixed(1)}%</td><td>${c.offered_load.toFixed(2)}</td><td>${sourcedReferrals(c).toFixed(1)}</td></tr>`).join("") + "</tbody>";
+    // M/M/c reference values for the statewide settings (Erlang C)
+    const ca = DATA.communities.find(c => c.name === "California"), lamTot = sourcedReferrals(ca);
+    const pi = [ca.latino_share * ca.spanish_pref_share, ca.latino_share * (1 - ca.spanish_pref_share), 1 - ca.latino_share];
+    const tH = meanWeeks(ca.stage_probs.Hispanic), tN = meanWeeks(ca.stage_probs["Non-Hispanic"]), tMix = pi[0] * tH + pi[1] * tH + pi[2] * tN;
+    const erlang = (lam, mu, c) => {
+      if (c === 0) return { rho: Infinity, pw: 1, wq: Infinity };
+      const a = lam / mu; let B = 1;
+      for (let n = 1; n <= c; n++) B = a * B / (n + a * B);
+      const rho = a / c, C = rho < 1 ? B / (1 - rho * (1 - B)) : 1;
+      return { rho, pw: C, wq: rho < 1 ? C / (c * mu - lam) : Infinity };
+    };
+    const rowsE = [["All 90 slots in one shared pool", lamTot, 1 / tMix, 90], ["Bilingual room alone, Spanish-preferring patients only", lamTot * pi[0], 1 / tH, 30], ["Same room while the bilingual post is vacant", lamTot * pi[0], 1 / tH, 0]];
+    $("erlangtable").innerHTML = `<thead><tr><th scope="col">Setup</th><th scope="col">Servers c</th><th scope="col">λ per week</th><th scope="col">ρ</th><th scope="col">P(wait)</th><th scope="col">Mean wait (weeks)</th></tr></thead><tbody>` +
+      rowsE.map(([name, lam, mu, c]) => { const e = erlang(lam, mu, c); return `<tr><th scope="row" style="white-space:normal">${name}</th><td>${c}</td><td>${lam.toFixed(2)}</td><td>${isFinite(e.rho) ? e.rho.toFixed(2) : "n/a"}</td><td>${e.pw < 0.001 ? "&lt;0.1%" : (e.pw * 100).toFixed(1) + "%"}</td><td>${isFinite(e.wq) ? (e.wq < 0.01 ? "&lt;0.01" : e.wq.toFixed(2)) : "grows without limit"}</td></tr>`; }).join("") + "</tbody>";
+    const v = T.validation;
+    $("valtable").innerHTML = `<thead><tr><th scope="col">Group</th><th scope="col">Exit</th><th scope="col">B = NR</th><th scope="col">Simulated</th></tr></thead><tbody>` +
+      ["Hispanic", "Non-Hispanic"].flatMap(g => EXITS.slice(0, 3).map((e, k) => `<tr><th scope="row">${g}</th><td>${e}</td><td>${v[g].analytic[k].toFixed(1)}%</td><td>${v[g].simulated[k].toFixed(1)}%</td></tr>`)).join("") + "</tbody>";
+    const names = { latino_share: "Latino share", spanish_pref_share: "Spanish-preferring share", caseload_per_clinician: "Caseload", offered_load: "Demand vs capacity",
+                    renege_prob: "Weekly chance of giving up", wait_log_or_per_week: "Wait effect", turnover_annual: "Turnover", vacancy_weeks_general: "Weeks to fill a post", bilingual_vacancy_factor: "Bilingual hiring delay" };
+    $("prcctable").innerHTML = `<thead><tr><th scope="col">Setting</th><th scope="col">PRCC with giving up</th></tr></thead><tbody>` +
+      Object.entries(T.prcc_gave_up).sort((a, b) => Math.abs(b[1]) - Math.abs(a[1])).map(([k, x]) => `<tr><th scope="row">${names[k] || k}</th><td>${x >= 0 ? "+" : "−"}${Math.abs(x).toFixed(2)}</td></tr>`).join("") + "</tbody>";
+  }
+
+  // Follow one blob through the Hispanic chain
+  const demo = $("demo"), dctx = demo.getContext && demo.getContext("2d");
+  const DW = 900, DH = 300;
+  let D = null;
+  function demoNodes() {
+    const K = DATA.theory.fits.Hispanic.K, xs = i => 80 + i * (740 / (K - 1));
+    return { phases: [...Array(K)].map((_, i) => [xs(i), 100]), exits: [[220, 240], [450, 240], [680, 240]] };
+  }
+  function demoStart() {
+    const N = demoNodes();
+    D = { state: 0, week: 0, done: -1, blob: { type: 0, x: N.phases[0][0], y: N.phases[0][1], tx: N.phases[0][0], ty: N.phases[0][1], t0: clock, dur: 0, hops: 1, s: 1, sv: 0, st: 1, alpha: 1, phase: 1, blink: 1, mood: 0, r: 16, vx: 0, vy: 0 }, next: clock + 0.7, log: [] };
+    $("demoLog").textContent = "Week 0: admitted to phase 1.";
+  }
+  function demoFrame() {
+    if (!dctx || !DATA || !demo.offsetParent) return;
+    if (!fitCanvas(demo, dctx, DW, DH)) return;
+    const ctx = dctx, N = demoNodes(), h = DATA.theory.fits.Hispanic.stage_probs, K = h.length;
+    ctx.clearRect(0, 0, DW, DH);
+    N.phases.forEach(([x, y], i) => {
+      sketchBox(ctx, x - 34, y - 30, 68, 60, 200 + i, "#f3f6fb", INK, 1.5);
+      txt(ctx, `phase ${i + 1}`, x, y - 38, { font: ROUND, size: 14, align: "center" });
+      if (i < K - 1) { const [nx] = N.phases[i + 1]; sketchArrow(ctx, [[x + 36, y - 6], [(x + nx) / 2, y - 22], [nx - 38, y - 6]]); txt(ctx, h[i][3].toFixed(2), (x + nx) / 2, y - 26, { size: 11, align: "center", color: INK2 }); }
+    });
+    ["Completed", "Dropped out", "Other exit"].forEach((e, k) => { const [x, y] = N.exits[k]; sketchBox(ctx, x - 70, y - 26, 140, 52, 220 + k, "#fff", INK, 1.4); txt(ctx, e, x, y + 5, { font: ROUND, size: 15, align: "center" }); });
+    if (D) {
+      if (D.done < 0 && clock > D.next) {
+        const r = h[D.state], u = Math.random(), adv = D.state < K - 1 ? r[3] : 0;
+        D.week++;
+        let k = -1, c = r[0];
+        if (u < c) k = 0; else if (u < (c += r[1])) k = 1; else if (u < (c += r[2])) k = 2; else if (u < c + adv) D.state++;
+        if (k >= 0) { D.done = k; D.blob.mood = k === 0 ? 1 : 0; moveTo(D.blob, N.exits[k][0], N.exits[k][1] - 42, 0); if (!reduceMotion) D.blob.dur = 0.9; $("demoLog").textContent = `Week ${D.week}: left through ${EXITS[k].toLowerCase()}. Press again for a new patient.`; }
+        else { const [x, y] = N.phases[D.state]; moveTo(D.blob, x + (Math.random() - 0.5) * 20, y + 6, 0); if (!reduceMotion) D.blob.dur = 0.4; $("demoLog").textContent = `Week ${D.week}: in phase ${D.state + 1}.`; }
+        D.next = clock + (reduceMotion ? 0.05 : 0.45);
+      }
+      const b = D.blob, [x, y] = posAt(b, clock); b.vx = (x - b.x) * 60; b.vy = (y - b.y) * 60; b.x = x; b.y = y;
+      drawBlob(ctx, b, clock);
+      txt(ctx, `week ${D.week}`, DW - 10, 22, { font: ROUND, size: 16, align: "right", color: INK2 });
+    } else txt(ctx, "press Follow one blob", DW / 2, 30, { font: HAND, size: 22, align: "center", color: INK2 });
+  }
+  $("demoGo").addEventListener("click", demoStart);
+
+  // On wide screens one scroll gesture (or arrow / page key) moves to the next card, centered on screen
+  const stops = () => [document.querySelector("#v-overview header"), ...$$(".step"), document.querySelector("footer")];
+  let stepLock = 0;
+  function nearestStop() {
+    const mid = innerHeight / 2;
+    let best = 0, bd = Infinity;
+    stops().forEach((el, i) => { const r = el.getBoundingClientRect(), d = Math.abs(r.top + r.height / 2 - mid); if (d < bd) { bd = d; best = i; } });
+    return best;
+  }
+  function goStop(dir) {
+    const list = stops(), i = clamp(nearestStop() + dir, 0, list.length - 1), el = list[i], r = el.getBoundingClientRect();
+    const top = i === 0 ? 0 : i === list.length - 1 ? document.documentElement.scrollHeight : r.top + scrollY - Math.max(0, (innerHeight - r.height) / 2);
+    window.scrollTo({ top, behavior: reduceMotion ? "auto" : "smooth" });
+    stepLock = performance.now() + 850;
+  }
+  const paging = () => view === "overview" && innerWidth >= 1100;
+  window.addEventListener("wheel", e => {
+    if (!paging() || e.ctrlKey || Math.abs(e.deltaY) < 4) return;
+    const inner = e.target.closest && e.target.closest(".step");
+    if (inner && inner.scrollHeight > inner.clientHeight + 2) {  // let a card that overflows scroll its own content first
+      const atTop = inner.scrollTop <= 0, atEnd = inner.scrollTop + inner.clientHeight >= inner.scrollHeight - 1;
+      if ((e.deltaY > 0 && !atEnd) || (e.deltaY < 0 && !atTop)) return;
+    }
+    e.preventDefault();
+    if (performance.now() > stepLock) goStop(Math.sign(e.deltaY));
+  }, { passive: false });
+  document.addEventListener("keydown", e => {
+    if (!paging() || !["ArrowDown", "ArrowUp", "PageDown", "PageUp"].includes(e.key) || e.target.closest("input, select, textarea")) return;
+    e.preventDefault(); goStop(e.key === "ArrowDown" || e.key === "PageDown" ? 1 : -1);
+  });
+  const toTop = $("toTop");
+  const syncTop = () => { toTop.hidden = !(view === "overview" && scrollY > innerHeight * 1.5); };
+  addEventListener("scroll", syncTop, { passive: true }); addEventListener("hashchange", syncTop);
+  toTop.addEventListener("click", () => { window.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" }); stepLock = performance.now() + 850; });
+  $("scrollHint").addEventListener("click", () => { if (paging()) goStop(1); else document.querySelector(".step").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" }); });
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle("active", e.isIntersecting)), { rootMargin: "-40% 0px -40% 0px" });
+    $$(".step").forEach(el => io.observe(el));
+  } else $$(".step").forEach(el => el.classList.add("active"));
+  $$("canvas.blobword").forEach(cv => { const ctx = cv.getContext("2d"); drawBlob(ctx, { type: +cv.dataset.type, x: 26, y: 21, vx: 0, vy: 0, s: 1, r: 15, phase: 0, blink: 1, mood: 0, alpha: 1 }, 0); });
+  ui.play.addEventListener("click", () => setPlaying(!playing));
+  ui.step.addEventListener("click", () => stepWeek());
+  ui.reset.addEventListener("click", () => { setPlaying(false); restart(); });
+  ui.speed.addEventListener("input", () => { ui.speedOut.textContent = `${ui.speed.value} week${+ui.speed.value === 1 ? "" : "s"}/s`; });
+  ui.select.addEventListener("change", () => pickCommunity(+ui.select.value));
+  $("storySelect").addEventListener("change", e => pickCommunity(+e.target.value));
+  document.addEventListener("keydown", e => { if (e.key === " " && e.target === document.body && view !== "methods") { e.preventDefault(); setPlaying(!playing); } });
+
+  fetch("params.json")
+    .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(json => {
+      DATA = json;
+      DATA.communities.forEach((c, i) => {
+        for (const sel of [ui.select, $("storySelect")]) {
+          const o = document.createElement("option"); o.value = String(i); o.textContent = `${c.name} (${Math.round(c.latino_share * 100)}% Latino)`; sel.append(o);
+        }
+      });
+      buildSettings(); fillTheory(); route();
+      pickCommunity(Math.max(0, DATA.communities.findIndex(c => c.name === "California")));
+      showStatus("");
+      if (!reduceMotion && view !== "methods") setPlaying(true);
+      requestAnimationFrame(loop);
+    })
+    .catch(() => showStatus("The clinic settings (params.json) didn't load, so the board can't run. Reload the page to try again."));
+}
+</script>
+</body>
+</html>

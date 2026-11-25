@@ -1,0 +1,22 @@
+Reference: gap -1.6 ± 1.1 pp; Spanish-pref gave up 10.1 ± 1.9%
+  latino_share               low    0.27: gap  -2.1, gave up   8.4% | high    0.65: gap  -1.4, gave up  10.3%
+  spanish_pref_share         low    0.15: gap  -2.6, gave up   7.9% | high    0.39: gap  -1.6, gave up  10.1%
+  caseload_per_clinician     low      20: gap  -1.6, gave up  13.8% | high      40: gap  -1.7, gave up   9.2%
+  offered_load               low     0.8: gap  -1.3, gave up   6.9% | high     1.1: gap  -2.9, gave up  17.2%
+  renege_prob                low     0.1: gap  -1.6, gave up   7.5% | high     0.3: gap  -2.0, gave up  12.4%
+  wait_log_or_per_week       low     0.0: gap  -0.9, gave up  10.6% | high  0.3525: gap  -1.9, gave up  10.1%
+  turnover_annual            low    0.19: gap  -2.0, gave up   6.8% | high     0.5: gap  -1.8, gave up  13.4%
+  vacancy_weeks_general      low     4.3: gap  -2.5, gave up   7.0% | high    13.0: gap  -0.1, gave up  14.6%
+  bilingual_vacancy_factor   low     1.0: gap  -1.8, gave up   7.8% | high     3.0: gap  -0.0, gave up  15.0%
+
+Global (300 samples): gap 5-95% = -4.6 to 1.4 pp; gap > 5 pp in 0% of samples
+  PRCC latino_share               gap +0.10   gave up +0.07
+  PRCC spanish_pref_share         gap +0.00   gave up +0.04
+  PRCC caseload_per_clinician     gap -0.10   gave up -0.23
+  PRCC offered_load               gap -0.24   gave up +0.47
+  PRCC renege_prob                gap +0.02   gave up +0.29
+  PRCC wait_log_or_per_week       gap +0.02   gave up +0.01
+  PRCC turnover_annual            gap +0.10   gave up +0.49
+  PRCC vacancy_weeks_general      gap +0.14   gave up +0.60
+  PRCC bilingual_vacancy_factor   gap +0.27   gave up +0.62
+Saved outputs/sensitivity.json

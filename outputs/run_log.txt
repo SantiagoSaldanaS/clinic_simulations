@@ -1,0 +1,37 @@
+Chain source: MLE fit to tedsd_puf_2024.csv; STFIPS=6; outpatient (SERVICES_D 6-7); co_occurring_only=False. Spanish-preferring patients use the Hispanic chain.
+[Hispanic] K=5 stages; absorption from stage 1 (C, D, O) = [27.3 47.  25.7]; expected weeks = 20.7
+[Non-Hispanic] K=7 stages; absorption from stage 1 (C, D, O) = [24.6 48.7 26.7]; expected weeks = 23.0
+Arrival rates per week: {'Latino, Spanish-preferring': np.float64(0.501), 'Latino, English-proficient': np.float64(1.354), 'Non-Latino': np.float64(2.043)}
+Check [Hispanic]: analytic [27.3 47.  25.7] vs simulated [27.5 47.3 25. ]
+Check [Non-Hispanic]: analytic [24.6 48.7 26.7] vs simulated [24.9 48.5 26.4]
+
+Baseline:
+  Latino, Spanish-preferring   completed  25.4%  gave up   7.9%  wait 0.16 wk  unresolved 0.2%
+  Latino, English-proficient   completed  25.9%  gave up   5.6%  wait 0.19 wk  unresolved 0.2%
+  Non-Latino                   completed  22.6%  gave up   7.9%  wait 0.27 wk  unresolved 0.1%
+
+Staffing by community (3 clinicians):
+  Sacramento metro           0 bilingual of 3: Spanish-pref completed   0.0% vs non-Latino  22.4%, wait nan wk, gave up 100%
+  Sacramento metro           1 bilingual of 3: Spanish-pref completed  25.5% vs non-Latino  22.3%, wait 0.2 wk, gave up 7%
+  Sacramento metro           2 bilingual of 3: Spanish-pref completed  25.0% vs non-Latino  22.0%, wait 0.2 wk, gave up 8%
+  California                 0 bilingual of 3: Spanish-pref completed   0.0% vs non-Latino  22.8%, wait nan wk, gave up 100%
+  California                 1 bilingual of 3: Spanish-pref completed  25.4% vs non-Latino  22.6%, wait 0.2 wk, gave up 8%
+  California                 2 bilingual of 3: Spanish-pref completed  24.5% vs non-Latino  22.2%, wait 0.2 wk, gave up 8%
+  Los Angeles metro          0 bilingual of 3: Spanish-pref completed   0.0% vs non-Latino  22.8%, wait nan wk, gave up 100%
+  Los Angeles metro          1 bilingual of 3: Spanish-pref completed  24.6% vs non-Latino  22.1%, wait 0.2 wk, gave up 8%
+  Los Angeles metro          2 bilingual of 3: Spanish-pref completed  25.4% vs non-Latino  21.7%, wait 0.2 wk, gave up 7%
+  Salinas metro              0 bilingual of 3: Spanish-pref completed   0.0% vs non-Latino  23.2%, wait nan wk, gave up 100%
+  Salinas metro              1 bilingual of 3: Spanish-pref completed  25.2% vs non-Latino  22.4%, wait 0.2 wk, gave up 9%
+  Salinas metro              2 bilingual of 3: Spanish-pref completed  24.6% vs non-Latino  21.6%, wait 0.2 wk, gave up 8%
+  San Benito County profile  0 bilingual of 3: Spanish-pref completed   0.0% vs non-Latino  23.6%, wait nan wk, gave up 100%
+  San Benito County profile  1 bilingual of 3: Spanish-pref completed  24.0% vs non-Latino  22.8%, wait 0.3 wk, gave up 10%
+  San Benito County profile  2 bilingual of 3: Spanish-pref completed  24.8% vs non-Latino  22.2%, wait 0.2 wk, gave up 8%
+  El Centro metro            0 bilingual of 3: Spanish-pref completed   0.0% vs non-Latino  23.9%, wait nan wk, gave up 100%
+  El Centro metro            1 bilingual of 3: Spanish-pref completed  22.8% vs non-Latino  21.9%, wait 0.5 wk, gave up 15%
+  El Centro metro            2 bilingual of 3: Spanish-pref completed  24.6% vs non-Latino  22.3%, wait 0.2 wk, gave up 9%
+
+Idle bilingual slots: lend vs reserve (San Benito profile, 1 bilingual of 3):
+  lend     gap -1.2 pp, completions/yr 50.3
+  reserve  gap -5.6 pp, completions/yr 47.1
+
+Saved outputs/results.json

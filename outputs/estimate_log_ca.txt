@@ -1,0 +1,24 @@
+1284867 rows read; 65407 outpatient episodes kept (STFIPS=6, co_occurring_only=False)
+Hispanic share among episodes with known ethnicity: 0.476
+
+Hispanic: 31073 episodes; observed shares C/D/O = [27.3 47.  25.7]
+  K=3: logLik -118643.9, BIC 237401.6
+  K=4: logLik -118503.8, BIC 237162.8
+  K=5: logLik -118118.8, BIC 236434.1
+  K=6: logLik -118101.7, BIC 236441.3
+  K=7: logLik -118079.1, BIC 236437.6
+  chosen K=5; absorption C/D/O = [27.3 47.  25.7]; mean weeks 20.7; Pearson X2 on 24 cells = 83.1  (200 bootstrap fits in 160s)
+
+Non-Hispanic: 34142 episodes; observed shares C/D/O = [24.6 48.7 26.7]
+  K=3: logLik -131036.4, BIC 262187.6
+  K=4: logLik -130842.9, BIC 261842.4
+  K=5: logLik -130713.6, BIC 261625.6
+  K=6: logLik -130645.2, BIC 261530.5
+  K=7: logLik -130601.7, BIC 261485.3
+  chosen K=7; absorption C/D/O = [24.6 48.7 26.7]; mean weeks 23.0; Pearson X2 on 24 cells = 58.7  (200 bootstrap fits in 483s)
+
+LR test, one chain for both groups vs separate (K=7): LR = 371.6, df = 27, p = 2.94e-62
+
+Wait effect (n=64077): OR per week waited = 1.030 (95% CI 1.005 to 1.057)
+
+Saved outputs/params_tedsd_ca.json. Next: python sim.py --params outputs/params_tedsd_ca.json
