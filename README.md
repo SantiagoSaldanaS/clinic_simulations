@@ -2,6 +2,8 @@
 
 Prepared for Dr. Miriam Nuño (UC Davis, Center for Reducing Health Disparities).
 
+![Animated overview of the three-clinician California outpatient clinic model](animation/overview.gif)
+
 ## Question
 
 A Spanish-preferring patient referred to a small outpatient clinic in California has to wait for a clinician who speaks Spanish. The question is how often that wait costs the clinic the patient, and how many bilingual clinicians a clinic needs in communities with different Latino populations.
