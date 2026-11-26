@@ -186,10 +186,10 @@
   </div>
   <div class="weekrow"><p class="weekline" id="weekLine" aria-live="polite">Week 0</p><a class="boxlink" href="#sec-board">What each box means</a></div>
 </div>
-<div class="chart" id="ch0"><h3>People waiting</h3><p>One line per waiting line, week by week.</p><canvas id="c0" aria-label="Line chart of people waiting in each line by week"></canvas></div>
+<div class="chart" id="ch0"><h3>People waiting</h3><p>Number of people in each waiting line, week by week.</p><canvas id="c0" aria-label="Line chart of people waiting in each line by week"></canvas></div>
 <div id="hiddenCharts" hidden></div>
-<div class="chart" id="ch1"><h3>Finished treatment</h3><p>Share of each group's finished referrals who completed.</p><canvas id="c1" aria-label="Line chart of the share of finished referrals who completed, by group"></canvas></div>
-<div class="chart" id="ch2"><h3>Gave up waiting</h3><p>Share of each group's finished referrals who left a line.</p><canvas id="c2" aria-label="Line chart of the share of finished referrals who gave up waiting, by group"></canvas></div>
+<div class="chart" id="ch1"><h3>Finished treatment</h3><p>Share of each group's finished referrals that completed treatment.</p><canvas id="c1" aria-label="Line chart of the share of finished referrals who completed, by group"></canvas></div>
+<div class="chart" id="ch2"><h3>Gave up waiting</h3><p>Share of each group's finished referrals that gave up while in a line.</p><canvas id="c2" aria-label="Line chart of the share of finished referrals who gave up waiting, by group"></canvas></div>
 
 <main>
 <section class="view" id="v-overview" aria-label="Overview">
@@ -205,19 +205,19 @@
         <article class="step">
           <span class="num">one</span>
           <h2>Three clinicians, 90 slots</h2>
-          <p>The clinic has three clinicians, each with room for 30 patients. A new referral that finds a free slot goes straight in. Every week in treatment, a patient stays, moves to a later phase, or leaves through one of the four exits on the right.</p>
-          <p>The exits show who left in the last ten weeks. A crowded exit means a lot of people are leaving that way right now.</p>
+          <p>The clinic has three clinicians, each with room for 30 patients, so a new referral that finds a free slot goes straight into treatment. Every week in treatment a patient either stays in the same phase, moves to a later one or leaves through one of the four exits on the right.</p>
+          <p>The exits only show who left in the last ten weeks, which means a crowded exit is one that a lot of people are currently leaving through.</p>
         </article>
         <article class="step">
           <span class="num">two</span>
           <h2>Two lines</h2>
-          <p>Orange blobs can only see a bilingual clinician. When those 30 slots are full, they wait in the top line, even if an English-only room has space. Everyone else waits in the bottom line and can use a bilingual slot that no orange blob needs.</p>
-          <p>About one in five people still in line gives up each week. They end up in the bottom exit.</p>
+          <p>Orange blobs can only be seen by a bilingual clinician, so when those 30 slots are full they wait in the top line (even if an English-only room has space). Everyone else waits in the bottom line and can also use any bilingual slot that no orange blob needs.</p>
+          <p>Each week about one in five of the people still in line gives up, and they end up in the bottom exit.</p>
         </article>
         <article class="step">
           <span class="num">three</span>
           <h2>Location changes the clinic</h2>
-          <p>Each area has its own Latino share, its own treatment patterns from TEDS-D 2024, and its own referral volume, set so that simulated patients wait about as often as real patients did there.</p>
+          <p>Each area has its own Latino share, its own treatment patterns (from TEDS-D 2024) and its own referral volume, which is set so that simulated patients wait about as often as real patients did in that area.</p>
           <label class="fine" for="storySelect">Area</label>
           <select id="storySelect"></select>
           <div class="facts js-facts" aria-live="polite"></div>
@@ -225,7 +225,7 @@
         <article class="step">
           <span class="num">four</span>
           <h2>When the bilingual clinician quits</h2>
-          <p>About a third of substance use counselors leave their job within a year. If the only Spanish-speaking clinician leaves, orange blobs have nowhere to go until a new hire starts, and bilingual posts take longer to fill.</p>
+          <p>About a third of substance use counselors leave their job within a year. If the only Spanish-speaking clinician is the one who leaves, orange blobs have nowhere to go until a new hire starts, and bilingual posts also take longer to fill.</p>
           <div class="eventrow"><button class="event js-quit" type="button">Bilingual clinician quits</button><button class="event js-hire" type="button">Hire a bilingual clinician</button></div>
           <p class="fine js-eventnote" aria-live="polite"></p>
           <div class="slot-chart" id="storyChartA"></div>
@@ -233,8 +233,8 @@
         <article class="step">
           <span class="num">five</span>
           <h2>Results</h2>
-          <p>Once in treatment, Latino and non-Latino patients in California finish at similar rates (adjusted odds ratio 0.96), and close to 48% of both groups drop out.</p>
-          <p>The difference shows up before treatment: 26% of Latino patients waited at least a day to start, against 19% of non-Latino patients. With one bilingual clinician, a single resignation can double the share of Spanish-preferring referrals who give up, as in El Centro.</p>
+          <p>Once in treatment, Latino and non-Latino patients in California finish at similar rates (adjusted odds ratio of 0.96), and close to 48% of both groups drop out.</p>
+          <p>The difference is in getting into treatment, as 26% of Latino patients waited at least a day to start compared to 19% of non-Latino patients. In a clinic with only one bilingual clinician (such as El Centro), a single resignation can double the share of Spanish-preferring referrals who give up.</p>
           <div class="slot-chart" id="storyChartB"></div>
           <div class="eventrow" style="margin:16px 0 12px"><a class="chip linkchip" href="#simulator">Open the simulator</a><a class="chip linkchip" href="#methods">Read the methods</a></div>
         </article>
@@ -249,7 +249,7 @@
     <div class="panel">
       <div class="card">
         <h2>Community</h2>
-        <label class="fine" for="commSelect">Each area sets the Latino share, the treatment chains and the referral volume.</label>
+        <label class="fine" for="commSelect">Each area has its own Latino share, treatment chains and referral volume.</label>
         <select id="commSelect"></select>
         <div class="facts js-facts" style="margin-top:10px" aria-live="polite"></div>
       </div>
@@ -260,7 +260,7 @@
       </div>
       <div class="card" id="settingsCard">
         <h2>Settings</h2>
-        <p class="fine">Settings start at values taken from TEDS-D or from published studies, and any of them can go past realistic values. Changing staffing or caseload restarts the run, and other changes apply from the next week.</p>
+        <p class="fine">Every setting starts at a value taken from TEDS-D or from published studies, and all of them can be moved past realistic values. Changing the staffing or the caseload restarts the run, while every other change applies from the next week.</p>
         <div id="settingsBody"></div>
       </div>
       <div class="card">
@@ -282,104 +282,104 @@
 <section class="view theory" id="v-methods" aria-label="Methods" hidden>
   <div class="col">
     <h1>Methods</h1>
-    <p>The model has three parts. Referrals arrive as a Poisson process, patients wait in a queue where they can give up, and treatment is an absorbing Markov chain estimated from <span data-v="n_ca|int"></span> California outpatient episodes in SAMHSA's TEDS-D 2024.</p>
+    <p>The model is made of three parts. Referrals arrive as a Poisson process, patients wait in a queue (where they can give up before being admitted), and treatment is an absorbing Markov chain estimated from <span data-v="n_ca|int"></span> California outpatient episodes in SAMHSA's TEDS-D 2024.</p>
     <nav class="toc" aria-label="Sections">
       <a href="#sec-board">Reading the board</a><a href="#sec-arrivals">Arrivals</a><a href="#sec-queue">Waiting lines</a><a href="#sec-chain">Treatment chain</a><a href="#sec-fit">Estimating the chain</a>
       <a href="#sec-wait">Waiting and dropout</a><a href="#sec-staff">Staff</a><a href="#sec-metro">Areas</a><a href="#sec-checks">Checks</a><a href="#sec-means">Results</a>
     </nav>
 
     <h2 id="sec-board">Reading the board</h2>
-    <p>Every blob is one person referred to the clinic. Each box on the board is a place that person can be in a given week.</p>
+    <p>Each blob is one person referred to the clinic, and each box on the board is a place where that person can be in a given week.</p>
     <dl class="gloss">
-      <dt><span class="sw" style="background:#d95f02"></span>Orange blobs</dt><dd>Latino patients who speak English less than very well. They need a clinician who speaks Spanish.</dd>
+      <dt><span class="sw" style="background:#d95f02"></span>Orange blobs</dt><dd>Latino patients who speak English less than very well, which means they need a clinician who speaks Spanish.</dd>
       <dt><span class="sw" style="background:#1f5fa8"></span>Blue blobs</dt><dd>Latino patients who are comfortable in English.</dd>
-      <dt><span class="sw" style="background:#5b6170"></span>Slate blobs</dt><dd>Patients who aren't Latino.</dd>
-      <dt>Waiting for a bilingual clinician</dt><dd>Orange blobs referred but not yet admitted. Only a slot with a bilingual clinician can take them, so this line moves only when one of those slots opens.</dd>
-      <dt>Waiting for any clinician</dt><dd>Blue and slate blobs not yet admitted. They take any open slot with an English-only clinician. If lending idle bilingual slots is on, they can also take a bilingual slot when no orange blob is waiting.</dd>
-      <dt>Clinician rooms</dt><dd>Each dot is one caseload slot, and a blob in a slot is in treatment. A dashed circle and "hiring" mean the post is empty, with the weeks left until someone is hired. Patients already in that room keep going, but nobody new starts there.</dd>
-      <dt>Phases</dt><dd>While in a room, each blob moves through hidden phases of the treatment chain (section 3). Phases don't show on the board and aren't clinical stages. They only shape how long people stay before they leave.</dd>
-      <dt>Completed</dt><dd>The clinic recorded that the patient finished the planned treatment. In California this is 27% of Hispanic and 25% of non-Hispanic outpatient discharges.</dd>
-      <dt>Dropped out</dt><dd>The patient stopped coming before finishing, without the clinic agreeing to the discharge. This is the most common way to leave, about 47% of Hispanic and 49% of non-Hispanic discharges.</dd>
-      <dt>Other exit</dt><dd>Every other discharge reason in TEDS-D. In California almost all of these are transfers to another program or level of care (about 24% of discharges). Jail and deaths add about 1.5%.</dd>
-      <dt>Gave up waiting</dt><dd>The person left the line before being admitted. TEDS-D only records people who were admitted, so this exit comes from the waiting model (section 2), not from the discharge records.</dd>
-      <dt>Bars beside the exits</dt><dd>The share of everyone who has left so far that went through each exit, split by color. The four bars add to 100%. The exit boxes only keep blobs from the last 10 weeks, but the bars count every exit since the run started. Hovering over or tapping a colored piece shows how much of that exit, and of all exits, that group makes up.</dd>
+      <dt><span class="sw" style="background:#5b6170"></span>Slate blobs</dt><dd>Patients who are not Latino.</dd>
+      <dt>Waiting for a bilingual clinician</dt><dd>Orange blobs that were referred but have not been admitted yet. Only a slot with a bilingual clinician can take them, so this line only moves when one of those slots opens.</dd>
+      <dt>Waiting for any clinician</dt><dd>Blue and slate blobs that have not been admitted yet. They take any open slot with an English-only clinician, and if lending idle bilingual slots is turned on, they can also take a bilingual slot as long as no orange blob is waiting.</dd>
+      <dt>Clinician rooms</dt><dd>Each dot is one caseload slot, and a blob sitting in a slot is in treatment. A dashed circle with "hiring" means the post is empty (the number is the weeks left until someone is hired). Patients already in that room continue their treatment, but nobody new starts there.</dd>
+      <dt>Phases</dt><dd>While in a room, each blob moves through the hidden phases of the treatment chain (section 3). Phases are not shown on the board and are not clinical stages, as they only shape how long people stay before leaving.</dd>
+      <dt>Completed</dt><dd>The clinic recorded that the patient finished the planned treatment. In California this happens in 27% of Hispanic and 25% of non-Hispanic outpatient discharges.</dd>
+      <dt>Dropped out</dt><dd>The patient stopped coming before finishing, without the clinic agreeing to the discharge. It is the most common way of leaving (about 47% of Hispanic and 49% of non-Hispanic discharges).</dd>
+      <dt>Other exit</dt><dd>Every other discharge reason in TEDS-D. In California almost all of these are transfers to another program or level of care (about 24% of discharges), with jail and deaths adding about 1.5%.</dd>
+      <dt>Gave up waiting</dt><dd>The person left the line before being admitted. TEDS-D only records people who were admitted, so this exit comes from the waiting model (section 2) and not from the discharge records.</dd>
+      <dt>Bars beside the exits</dt><dd>The share of everyone who has left so far that went through each exit, split by color, so the four bars add up to 100%. The exit boxes only keep the blobs from the last 10 weeks, while the bars count every exit since the run started. Hovering over or tapping a colored piece shows how much of that exit (and of all exits) that group makes up.</dd>
     </dl>
 
     <h2 id="sec-arrivals">1. Arrivals</h2>
-    <p>Referrals follow a Poisson process: they arrive one at a time, the counts in separate weeks are independent, and the expected number per week doesn't change over time. The number of referrals of each type in a week is then a Poisson count, and the time between two referrals is exponential.</p>
+    <p>Referrals follow a Poisson process, i.e. they arrive one at a time, the counts in separate weeks are independent, and the expected number per week does not change over time. This means that the number of referrals of each type in a week is a Poisson count, and that the time between two referrals is exponential.</p>
     <div class="math">\[ N_i(\text{week}) \sim \text{Poisson}(\lambda_i), \qquad \lambda_i = \lambda \, \pi_i, \qquad \pi = \big(\ell s,\, \ell(1-s),\, 1-\ell\big) \]</div>
-    <p>The three types are Spanish-preferring Latino, English-proficient Latino and non-Latino. \(\ell\) is the Latino share and \(s\) the share of Latinos who speak English less than very well (27% in California, ACS 2021).</p>
-    <p>Little's law, \(L = \lambda W\), gives the total rate: the number of patients in the clinic equals the arrival rate times the average time each one stays. With 90 slots that are a fraction \(\rho\) full on average and an average stay of \(E[T]\) weeks,</p>
+    <p>The three types are Spanish-preferring Latino, English-proficient Latino and non-Latino, where \(\ell\) is the Latino share and \(s\) is the share of Latinos who speak English less than very well (27% in California, ACS 2021).</p>
+    <p>The total rate comes from Little's law, \(L = \lambda W\), which says that the number of patients in the clinic equals the arrival rate times the average time each one stays. With 90 slots that are on average a fraction \(\rho\) full and an average stay of \(E[T]\) weeks,</p>
     <div class="math">\[ \lambda = \frac{\rho \cdot 90}{\sum_i \pi_i \, E[T_i]} \]</div>
-    <p>\(E[T_i]\) comes from the treatment chain in section 3, and section 7 sets \(\rho\) for each area.</p>
+    <p>Each \(E[T_i]\) comes from the treatment chain (section 3), and \(\rho\) is set for each area in section 7.</p>
 
     <h2 id="sec-queue">2. Waiting lines</h2>
-    <p>Each caseload slot works as a server, so the clinic has \(cK\) servers split into two groups: \(c_b\) bilingual and \(c_e\) English-only clinicians with \(K = 30\) slots each. Spanish-preferring patients can only use bilingual slots. Everyone else uses English-only slots first and bilingual slots when no Spanish-preferring patient is waiting. Both lines are first in, first out.</p>
-    <p>People in line can give up. Each week, a person still waiting leaves with probability \(\theta = 0.21\), which makes patience geometric with mean \(1/\theta \approx 4.8\) weeks, close to the one month reported by Kaplan and Johri. The geometric distribution is the discrete version of the exponential and is also memoryless: someone who has waited three weeks is as likely to leave this week as someone who just arrived.</p>
-    <p>The traffic intensity is \(\rho = \lambda / (cK\mu)\), where \(\mu = 1/E[T]\) is the service rate of one slot. In Kendall notation the clinic is close to an M/G/c queue with abandonment: arrivals are Markovian (M), but treatment length isn't exponential, so service is general (G). The M/M/c formulas still give a useful reference point. For the statewide settings:</p>
+    <p>Each caseload slot works as a server, so the clinic has \(cK\) servers split into two groups, \(c_b\) bilingual and \(c_e\) English-only clinicians, each with \(K = 30\) slots. Spanish-preferring patients can only use bilingual slots, while everyone else uses English-only slots first and bilingual slots only when no Spanish-preferring patient is waiting. Both lines are first in, first out.</p>
+    <p>People in line can give up. Each week, a person who is still waiting leaves with probability \(\theta = 0.21\), which makes patience geometric with a mean of \(1/\theta \approx 4.8\) weeks (close to the one month reported by Kaplan and Johri). The geometric distribution is the discrete version of the exponential and is also memoryless, which means that someone who has already waited three weeks is as likely to leave this week as someone who just arrived.</p>
+    <p>The traffic intensity is \(\rho = \lambda / (cK\mu)\), where \(\mu = 1/E[T]\) is the service rate of one slot. In Kendall notation the clinic is close to an M/G/c queue with abandonment, since arrivals are Markovian (M) but treatment length is not exponential, so service is general (G). The M/M/c formulas still work as a reference point. For the statewide settings they give the following:</p>
     <div class="scroll"><table id="erlangtable"></table></div>
-    <p>One shared pool of 90 slots would make a small share of patients wait, and only briefly. The bilingual room on its own has plenty of spare capacity for Spanish-preferring patients, until the bilingual post is vacant: then there's no server at all, and the line keeps growing until people give up. The simulation adds what these formulas leave out: two pools that share slots, people giving up, and clinicians who come and go. No closed formula covers that combination, so the clinic is simulated week by week.</p>
+    <p>With one shared pool of 90 slots only a small share of patients would wait, and only for a short time. The bilingual room on its own also has plenty of spare capacity for Spanish-preferring patients, but only while the bilingual post is filled. Once it is vacant there is no server at all for that line, so it keeps growing until people give up. The formulas also leave out the two pools sharing slots, people giving up and clinicians coming and going, and since no closed formula covers that combination, the clinic is simulated week by week.</p>
 
     <h2 id="sec-chain">3. Treatment as an absorbing Markov chain</h2>
-    <p>After admission, a patient's week-to-week path is an absorbing Markov chain with \(K\) transient states, called phases, and three absorbing states: completed, dropped out, and other exit (mostly transfers). Each week in phase \(j\) the patient completes (\(c_j\)), drops out (\(d_j\)), leaves another way (\(o_j\)), moves to phase \(j+1\) (\(a_j\)) or stays. In canonical form:</p>
+    <p>After admission, a patient's path from week to week is an absorbing Markov chain with \(K\) transient states (called phases) and three absorbing states, which are completed, dropped out and other exit (mostly transfers). Each week in phase \(j\), the patient completes (\(c_j\)), drops out (\(d_j\)), leaves another way (\(o_j\)), moves to phase \(j+1\) (\(a_j\)) or stays in the same phase. In canonical form:</p>
     <div class="math">\[ P = \begin{pmatrix} Q & R \\ 0 & I_3 \end{pmatrix}, \qquad N = (I-Q)^{-1}, \qquad B = NR, \qquad t = N\mathbf{1} \]</div>
-    <p>\(N\) is the fundamental matrix: \(N_{jk}\) is the expected number of weeks spent in phase \(k\) starting from phase \(j\). \(B\) holds the probability of ending in each absorbing state, and \(t\) the expected number of weeks until absorption, which is the average length of stay. The estimated chain for Hispanic episodes has <span data-v="fits.Hispanic.K"></span> phases:</p>
+    <p>\(N\) is the fundamental matrix, where \(N_{jk}\) is the expected number of weeks spent in phase \(k\) when starting from phase \(j\). \(B\) holds the probability of ending in each absorbing state, and \(t\) the expected number of weeks until absorption (i.e. the average length of stay). The estimated chain for Hispanic episodes has <span data-v="fits.Hispanic.K"></span> phases:</p>
     <div class="scroll"><table id="qtable"></table></div>
     <p>Absorption probabilities and average length of stay, with 95% bootstrap intervals:</p>
     <div class="scroll"><table id="btable"></table></div>
-    <p>The phases don't stand for clinical stages. A single geometric stay can't reproduce the real lengths of stay, where many patients leave in the first weeks and a large group stays more than four months. Several phases in a row can. The button below runs one patient through the Hispanic chain, one week per step.</p>
+    <p>The phases do not represent clinical stages. They are there because a single geometric stay cannot reproduce the real lengths of stay, where many patients leave in the first weeks and a large group stays for more than four months, while several phases in a row can. The button below runs one patient through the Hispanic chain, one week per step.</p>
     <div class="demo">
       <canvas id="demo" aria-label="One patient moving through the treatment phases week by week"></canvas>
       <div class="controls"><button id="demoGo" class="primary" type="button">Follow one blob</button><span class="fine" id="demoLog" aria-live="polite">Each press starts a new patient in phase 1.</span></div>
     </div>
 
     <h2 id="sec-fit">4. Estimating the chain</h2>
-    <p>Each TEDS-D record gives the length of stay and the reason for discharge, so it shows when and how a patient left the chain. Lengths of stay are exact up to 30 days and grouped after that (31 to 45 days, 46 to 60, and so on). For a given set of transition probabilities, the chance of leaving through exit \(k\) in week \(w\) is the chance of starting in phase 1, taking \(w-1\) steps among the phases, and then exiting:</p>
+    <p>Each TEDS-D record has the length of stay and the reason for discharge, so it shows when and how a patient left the chain. Lengths of stay are exact up to 30 days and grouped after that (31 to 45 days, 46 to 60, etc.). For a given set of transition probabilities, the chance of leaving through exit \(k\) in week \(w\) is the chance of starting in phase 1, taking \(w-1\) steps among the phases and then exiting:</p>
     <div class="math">\[ f_k(w) = e_1^\top Q^{\,w-1} R \, e_k \]</div>
-    <p>The likelihood adds these chances over the weeks that each length-of-stay group covers, where \(n_{ik}\) is the number of episodes in group \(i\) with exit \(k\) and \(W_{iw}\) is the share of week \(w\)'s days that fall inside group \(i\):</p>
+    <p>The likelihood adds these chances over the weeks that each length-of-stay group covers, where \(n_{ik}\) is the number of episodes in group \(i\) with exit \(k\) and \(W_{iw}\) is the share of the days of week \(w\) that fall inside group \(i\):</p>
     <div class="math">\[ \ell(\theta) = \sum_{i,k} n_{ik} \log \sum_{w} W_{iw}\, f_k(w) \]</div>
-    <p>The probabilities come from maximizing \(\ell\) numerically with L-BFGS-B. The number of phases is chosen with BIC \(= -2\ell + p\ln n\), which penalizes extra parameters (\(p = 4(K-1)+3\)), and the lowest value wins:</p>
+    <p>The probabilities are found by maximizing \(\ell\) numerically with L-BFGS-B. The number of phases is chosen with BIC \(= -2\ell + p\ln n\), which penalizes extra parameters (\(p = 4(K-1)+3\)), and the lowest value is kept:</p>
     <div class="scroll"><table id="bictable"></table></div>
-    <p>A likelihood-ratio test compares one shared chain with separate chains for Hispanic and non-Hispanic episodes: LR = <span data-v="lr_test.lr|0"></span> with <span data-v="lr_test.df"></span> degrees of freedom, p &lt; 10<sup>−60</sup>, so each group keeps its own chain. The intervals come from 200 bootstrap resamples. As a check, the same code ran on fake data generated from known chains, and 22 of 24 true values fell inside the 95% intervals.</p>
+    <p>A likelihood-ratio test comparing one shared chain against separate chains for Hispanic and non-Hispanic episodes gives LR = <span data-v="lr_test.lr|0"></span> with <span data-v="lr_test.df"></span> degrees of freedom (p &lt; 10<sup>−60</sup>), so each group keeps its own chain. The intervals come from 200 bootstrap resamples. As a check, the same code was run on fake data generated from known chains, and 22 of the 24 true values fell inside the 95% intervals.</p>
     <figure><img src="figures/fig1_chain_fit.png" width="1980" height="720" alt="Bar charts of observed length of stay by exit type for Hispanic and non-Hispanic episodes, with the fitted chain's values as dots. The dots track the bars closely." loading="lazy"><figcaption>Observed length of stay and exit type (bars) next to the fitted chain (dots).</figcaption></figure>
 
     <h2 id="sec-wait">5. Waiting and dropout</h2>
-    <p>TEDS-D also records how long each patient waited to start treatment. A logistic regression of dropout on weeks waited, controlling for ethnicity and co-occurring mental illness, gives an odds ratio of <span data-v="wait_effect.or_per_week|3"></span> per week (95% CI <span data-v="wait_effect.or_ci.0|3"></span> to <span data-v="wait_effect.or_ci.1|3"></span>, n = <span data-v="wait_effect.n|int"></span>): each extra week of waiting raises the odds of dropping out by about 3%.</p>
+    <p>TEDS-D also records how long each patient waited to start treatment. A logistic regression of dropout on weeks waited, controlling for ethnicity and co-occurring mental illness, gives an odds ratio of <span data-v="wait_effect.or_per_week|3"></span> per week (95% CI <span data-v="wait_effect.or_ci.0|3"></span> to <span data-v="wait_effect.or_ci.1|3"></span>, n = <span data-v="wait_effect.n|int"></span>), which means that each extra week of waiting raises the odds of dropping out by about 3%.</p>
     <p>In the simulation, waiting \(w\) weeks multiplies a patient's weekly odds of dropping out during the first four weeks of treatment:</p>
     <div class="math">\[ \frac{d'}{1-d'} = \frac{d}{1-d}\, e^{\gamma \min(w, 12)} \]</div>
-    <p>Solving for the \(\gamma\) that reproduces the TEDS-D odds ratio gives \(\gamma = \) <span data-v="wait_stage1|3"></span>. The NIATx clinics, where attendance at the fourth session fell from 68.2% to 40.8% after a 30-day wait, would imply \(\gamma = \) <span data-v="wait_niatx|2"></span>. The sensitivity analysis covers both values.</p>
+    <p>Solving for the \(\gamma\) that reproduces the TEDS-D odds ratio gives \(\gamma = \) <span data-v="wait_stage1|3"></span>. The NIATx clinics, where attendance at the fourth session fell from 68.2% to 40.8% after a 30-day wait, would imply \(\gamma = \) <span data-v="wait_niatx|2"></span>, and the sensitivity analysis covers both values.</p>
 
     <h2 id="sec-staff">6. Staff</h2>
-    <p>Clinician departures are another Poisson process, at the 33.2% yearly rate measured by Eby and colleagues, so the chance that a given clinician leaves in a week is \(q = 1 - e^{-0.332/52}\). An empty post is filled after a geometric number of weeks: 8.7 on average for an English-only post and 1.5 times longer for a bilingual one (the 1.5 is an assumption). The patients of a clinician who leaves stay in care, but the room takes no one new until the new hire starts.</p>
+    <p>Clinicians leave following another Poisson process, at the 33.2% yearly rate measured by Eby and colleagues, so the chance that a given clinician leaves in a week is \(q = 1 - e^{-0.332/52}\). An empty post is filled after a geometric number of weeks, 8.7 on average for an English-only post and 1.5 times longer for a bilingual one (the 1.5 is an assumption). The patients of a clinician who leaves stay in care, but the room does not take anyone new until the new hire starts.</p>
 
     <h2 id="sec-metro">7. Calibrating each area</h2>
-    <p>For California and each metro area with at least 500 outpatient episodes, both chains are estimated again from that area's episodes (a group with fewer than 400 keeps the statewide chain). Then \(\rho\) is chosen so the share of simulated patients who wait a week or more matches the share of real patients who waited 8 days or more in that area:</p>
+    <p>For California and for each metro area with at least 500 outpatient episodes, both chains are estimated again from that area's episodes (a group with fewer than 400 keeps the statewide chain). After that, \(\rho\) is chosen so that the share of simulated patients who wait a week or more matches the share of real patients in that area who waited 8 days or more:</p>
     <div class="math">\[ \hat P_\rho(\text{wait} \ge 1 \text{ week}) = \text{share of patients with DAYWAIT} \ge 8 \text{ days} \]</div>
     <div class="scroll"><table id="metrotable"></table></div>
-    <p class="fine">Fresno and Sacramento report few episodes and very low completion, which likely reflects how those counties report their data.</p>
+    <p class="fine">Fresno and Sacramento report few episodes and very low completion, which is most likely caused by how those counties report their data.</p>
 
     <h2 id="sec-checks">8. Checks and sensitivity</h2>
     <p>With the waiting effect turned off and unlimited slots, the simulated exit shares come out within one percentage point of \(B = NR\):</p>
     <div class="scroll"><table id="valtable"></table></div>
     <figure><img src="figures/fig2_chain_outcomes.png" width="1440" height="720" alt="Bars of absorption probabilities by exit for each group with bootstrap intervals, and simulated values as dots." loading="lazy"><figcaption>Absorption probabilities with 95% bootstrap intervals (bars) and simulated values (dots).</figcaption></figure>
-    <p>Eight settings don't come from TEDS-D. Each one was moved across its range on its own, and then all of them were varied together in 300 Latin hypercube samples with 20 runs each. The table gives the partial rank correlation of each setting with the share of Spanish-preferring referrals who give up waiting:</p>
+    <p>Eight of the settings do not come from TEDS-D. Each one was first moved across its range on its own, and then all of them were varied together in 300 Latin hypercube samples with 20 runs each. The table shows the partial rank correlation of each setting with the share of Spanish-preferring referrals who give up waiting:</p>
     <div class="scroll"><table id="prcctable"></table></div>
-    <figure><img src="figures/fig5_tornado.png" width="1620" height="828" alt="Tornado chart: demand, time to fill a post, the bilingual hiring delay and turnover change the giving-up share the most." loading="lazy"><figcaption>One-way sensitivity of the share of Spanish-preferring referrals who give up, San Benito profile with one bilingual clinician out of three.</figcaption></figure>
-    <figure><img src="figures/fig3_staffing_by_community.png" width="1890" height="1152" alt="Dot plots of completion and giving up for Spanish-preferring and non-Latino referrals across six community profiles with one or two bilingual clinicians." loading="lazy"><figcaption>Completion and giving up by community and number of bilingual clinicians, 200 runs each, 95% intervals.</figcaption></figure>
-    <figure><img src="figures/fig4_waitlist_trace.png" width="1800" height="864" alt="One simulated run: the bilingual waiting line grows while the bilingual post is vacant." loading="lazy"><figcaption>One run, chosen because its bilingual post falls vacant: the orange line grows until the new hire starts.</figcaption></figure>
+    <figure><img src="figures/fig5_tornado.png" width="1620" height="828" alt="Tornado chart: demand, time to fill a post, the bilingual hiring delay and turnover change the giving-up share the most." loading="lazy"><figcaption>One-way sensitivity of the share of Spanish-preferring referrals who give up (San Benito profile, one bilingual clinician out of three).</figcaption></figure>
+    <figure><img src="figures/fig3_staffing_by_community.png" width="1890" height="1152" alt="Dot plots of completion and giving up for Spanish-preferring and non-Latino referrals across six community profiles with one or two bilingual clinicians." loading="lazy"><figcaption>Completion and giving up by community and number of bilingual clinicians (200 runs each, 95% intervals).</figcaption></figure>
+    <figure><img src="figures/fig4_waitlist_trace.png" width="1800" height="864" alt="One simulated run: the bilingual waiting line grows while the bilingual post is vacant." loading="lazy"><figcaption>One run, chosen because its bilingual post falls vacant. The orange line grows until the new hire starts.</figcaption></figure>
 
     <h2 id="sec-means">9. Results</h2>
     <ul>
-      <li>In treatment, Latino and non-Latino patients in California do about the same: the adjusted odds ratio for completing is <span data-v="adjusted.completed.or|2"></span> (95% CI <span data-v="adjusted.completed.ci.0|2"></span> to <span data-v="adjusted.completed.ci.1|2"></span>), and for dropping out <span data-v="adjusted.dropout.or|2"></span>.</li>
-      <li>Latino patients wait to start more often: <span data-v="hisp_wait|pct"></span> of Hispanic episodes started after a day or more, against <span data-v="nonhisp_wait|pct"></span> of non-Hispanic episodes.</li>
-      <li>One bilingual clinician covers demand in most areas. When that clinician leaves, the bilingual line has no server, and in areas with many Latino residents the share of Spanish-preferring referrals who give up doubles.</li>
-      <li>Staff stability matters more than the population mix: the time to fill a post, the extra delay for bilingual hires and turnover have the strongest partial correlations with giving up.</li>
+      <li>Once in treatment, Latino and non-Latino patients in California do about the same, with an adjusted odds ratio of <span data-v="adjusted.completed.or|2"></span> for completing (95% CI <span data-v="adjusted.completed.ci.0|2"></span> to <span data-v="adjusted.completed.ci.1|2"></span>) and <span data-v="adjusted.dropout.or|2"></span> for dropping out.</li>
+      <li>Latino patients wait to start more often, as <span data-v="hisp_wait|pct"></span> of Hispanic episodes started after a day or more, compared to <span data-v="nonhisp_wait|pct"></span> of non-Hispanic episodes.</li>
+      <li>One bilingual clinician covers demand in most areas. However, when that clinician leaves the bilingual line has no server, and in areas with many Latino residents the share of Spanish-preferring referrals who give up doubles.</li>
+      <li>Staff stability matters more than the population mix, since the time to fill a post, the extra delay for bilingual hires and turnover have the strongest partial correlations with giving up.</li>
     </ul>
     <h2>Limits</h2>
     <ul>
-      <li>TEDS-D records ethnicity, not language. Spanish-preferring patients use the Hispanic chain, so the model can't show any effect of language-concordant care during treatment.</li>
-      <li>TEDS-D only includes people who reached treatment. People who gave up before admission leave no record, so the waiting side relies on published studies.</li>
-      <li>When a clinician quits, their patients continue in care as if colleagues covered them. The room only stops taking new patients. A real departure may push some patients to transfer or drop out, but no published estimate of that effect turned up.</li>
+      <li>TEDS-D records ethnicity, not language. Spanish-preferring patients use the Hispanic chain, so the model cannot show any effect of language-concordant care (a clinician who speaks the patient's language) during treatment.</li>
+      <li>TEDS-D only includes people who reached treatment. People who gave up before admission leave no record, so the waiting side of the model relies on published studies.</li>
+      <li>When a clinician quits, their patients continue in care as if colleagues covered them, and the room only stops taking new patients. A real departure may push some patients to transfer or drop out, but no published estimate of that effect was found.</li>
       <li>The model has no interpreters, there is no county-level data on English proficiency among Latinos, and TEDS-D counts episodes at publicly funded facilities, not people.</li>
     </ul>
     <h2>Sources</h2>
@@ -421,7 +421,7 @@
   const ui = { play: $("play"), step: $("step"), reset: $("reset"), speed: $("speed"), speedOut: $("speedOut"), week: $("weekLine"),
                tbody: $("tbody"), status: $("status"), select: $("commSelect"), notes: $("notesToggle"), settings: $("settingsBody") };
   const showStatus = m => { ui.status.textContent = m; ui.status.hidden = !m; };
-  if (!bctx) showStatus("This browser can't draw the board. The numbers table still updates when you press One week.");
+  if (!bctx) showStatus("This browser cannot draw the board, but the numbers table still updates with One week.");
 
   let DATA = null, comm = 0, P = null, S = null, rng = null, playing = false, last = 0, progress = 0, clock = 0, deco = 0, view = "overview";
 
@@ -920,11 +920,11 @@
   }
   function renderFacts() {
     const c = DATA.communities[comm], o = c.observed;
-    const chains = c.cbsa == null ? "Treatment chains: the statewide fit."
+    const chains = c.cbsa == null ? "Both treatment chains use the statewide fit."
       : Object.values(c.chain_source).every(v => v.startsWith("fitted")) ? "Both treatment chains are fitted to this area's episodes."
-      : `Treatment chains: Latino ${c.chain_source.Hispanic}, non-Latino ${c.chain_source["Non-Hispanic"]}.`;
+      : `The Latino treatment chain is ${c.chain_source.Hispanic}, and the non-Latino one is ${c.chain_source["Non-Hispanic"]}.`;
     const html = c.n
-      ? `<b>${esc(c.name)}.</b> ${c.n.toLocaleString()} outpatient episodes in TEDS-D 2024, ${pc(c.latino_share)} Latino. ${pc(c.wait_8plus_days)} of patients waited 8+ days to start. Completed: Latino ${pc(o.Hispanic.completed)}, non-Latino ${pc(o["Non-Hispanic"].completed)}. ${esc(chains)} About ${sourcedReferrals(c).toFixed(1)} referrals a week.`
+      ? `<b>${esc(c.name)}.</b> ${c.n.toLocaleString()} outpatient episodes in TEDS-D 2024, ${pc(c.latino_share)} Latino. ${pc(c.wait_8plus_days)} of patients waited 8+ days to start, and ${pc(o.Hispanic.completed)} of Latino and ${pc(o["Non-Hispanic"].completed)} of non-Latino patients completed treatment. ${esc(chains)} The clinic gets about ${sourcedReferrals(c).toFixed(1)} referrals a week.`
       : `<b>${esc(c.name)}.</b> ${esc(c.note)}`;
     $$(".js-facts").forEach(el => { el.innerHTML = html; });
   }
@@ -933,37 +933,37 @@
   const GROUPS = [
     { title: "Who arrives", items: [
       { key: "referrals_per_week", label: "People referred per week", min: 0.5, max: 15, step: 0.1, live: true, fmt: v => v.toFixed(1),
-        help: "The main volume knob. When more people arrive than slots open up, both lines grow.",
-        src: c => `Set so this area's simulated waits match TEDS-D (${pc(c.wait_8plus_days)} waited 8+ days): ${sourcedReferrals(c).toFixed(1)}` },
+        help: "Main setting for volume. If more people arrive than slots open up, both lines grow.",
+        src: c => `${sourcedReferrals(c).toFixed(1)}, set so the simulated waits in this area match TEDS-D (${pc(c.wait_8plus_days)} waited 8+ days)` },
       { key: "latino_share", label: "Latino share of referrals", min: 0, max: 1, step: 0.01, live: true, fmt: pc,
-        help: "Splits arrivals between Latino and non-Latino blobs. The total stays the same.", src: c => `TEDS-D 2024 for this area: ${pc(c.latino_share)}` },
+        help: "Splits arrivals between Latino and non-Latino blobs, while the total stays the same.", src: c => `${pc(c.latino_share)}, from ${c.name.startsWith("San Benito") ? "the San Benito County plan" : "TEDS-D 2024 for this area"}` },
       { key: "spanish_pref_share", label: "Latinos who need Spanish", min: 0, max: 1, step: 0.01, live: true, fmt: pc,
-        help: "Of the Latino arrivals, the share who need a Spanish-speaking clinician. Only these join the bilingual line.",
-        src: c => `${c.name.startsWith("San Benito") ? "San Benito County plan" : "ACS 2021, statewide"}: ${pc(c.spanish_pref_share)}` },
+        help: "Share of the Latino arrivals that need a Spanish-speaking clinician (only these join the bilingual line).",
+        src: c => `${pc(c.spanish_pref_share)}, from ${c.name.startsWith("San Benito") ? "the San Benito County plan" : "ACS 2021 (statewide)"}` },
     ]},
     { title: "Clinic size", items: [
-      { key: "general", label: "English-only clinicians", stepper: true, min: 0, max: 4, help: "Any blob except orange ones can take their slots.", src: () => "the standard clinic has 2 of 3" },
-      { key: "bilingual", label: "Bilingual clinicians", stepper: true, min: 0, max: 4, help: "The only rooms orange blobs can enter. Others use spare slots here.", src: () => "the standard clinic has 1 of 3" },
-      { key: "caseload_per_clinician", label: "Caseload per clinician", min: 5, max: 60, step: 1, live: false, fmt: v => String(v), help: "Slots in each room. More slots, shorter lines.", src: () => "counselor survey mean: 30" },
+      { key: "general", label: "English-only clinicians", stepper: true, min: 0, max: 4, help: "Any blob except orange ones can take their slots.", src: () => "2, as the standard clinic has 2 of its 3 clinicians English-only" },
+      { key: "bilingual", label: "Bilingual clinicians", stepper: true, min: 0, max: 4, help: "The only rooms orange blobs can enter (other blobs can use their spare slots).", src: () => "1, as the standard clinic has 1 bilingual clinician out of 3" },
+      { key: "caseload_per_clinician", label: "Caseload per clinician", min: 5, max: 60, step: 1, live: false, fmt: v => String(v), help: "Number of slots in each room. More slots means shorter lines.", src: () => "30, the mean caseload in counselor surveys" },
     ]},
     { title: "Waiting", items: [
       { key: "renege_prob", label: "Weekly chance of giving up", min: 0, max: 0.8, step: 0.01, live: true, fmt: pc,
-        help: "Each week, this share of the people still in a line leaves for good.", src: () => "about one month of patience (Kaplan & Johri): 21%" },
+        help: "Share of the people still in a line that leave for good each week.", src: () => "21%, which gives about one month of patience (Kaplan & Johri)" },
       { key: "wait_log_or_per_week", label: "How much waiting hurts", min: 0, max: 1, step: 0.005, live: true, fmt: v => v.toFixed(3),
-        help: "Extra log-odds of dropping out per week waited, during the first four weeks of care.", src: () => "TEDS-D fit: 0.091 (NIATx clinics would imply 0.35)" },
+        help: "Extra log-odds of dropping out per week waited, applied during the first four weeks of care.", src: () => "0.091, fitted to TEDS-D (the NIATx clinics would imply 0.35)" },
     ]},
     { title: "Treatment", items: [
       { key: "completion_odds", label: "Chance of finishing (×)", min: 0.5, max: 5, step: 0.1, live: true, fmt: v => `${v.toFixed(1)}×`,
-        help: "Multiplies each week's odds of completing treatment. Above 1 stands for a more effective program. Stays also get shorter, which frees slots.",
-        src: c => c.observed ? `1×, the fitted chains. In ${c.name}, ${pc(c.observed.Hispanic.completed)} of Latino and ${pc(c.observed["Non-Hispanic"].completed)} of non-Latino patients completed` : "1×, the fitted chains" },
+        help: "Multiplies the weekly odds of completing treatment, so values above 1 stand for a more effective program. Stays also get shorter, which frees slots.",
+        src: c => c.observed ? `1×, i.e. the fitted chains (in ${c.name}, ${pc(c.observed.Hispanic.completed)} of Latino and ${pc(c.observed["Non-Hispanic"].completed)} of non-Latino patients completed)` : "1×, i.e. the fitted chains" },
     ]},
     { title: "Staff", items: [
       { key: "turnover_annual", label: "Clinicians quitting per year", min: 0, max: 1.5, step: 0.01, live: true, fmt: pc,
-        help: "How often a clinician leaves. Their room takes no one new until a hire arrives.", src: () => "Eby et al. 2010: 33%" },
+        help: "How often a clinician leaves. Their room does not take anyone new until a new hire arrives.", src: () => "33%, from Eby et al. (2010)" },
       { key: "vacancy_weeks_general", label: "Weeks to fill a post", min: 1, max: 52, step: 0.5, live: true, fmt: v => v.toFixed(1),
-        help: "Average time a room sits empty after someone quits.", src: () => "county hiring takes one to three months: 8.7" },
+        help: "Average time a room stays empty after someone quits.", src: () => "8.7, since county hiring takes one to three months" },
       { key: "bilingual_vacancy_factor", label: "Extra wait for a bilingual hire (×)", min: 1, max: 6, step: 0.1, live: true, fmt: v => `${v.toFixed(1)}×`,
-        help: "Multiplies the weeks to fill when the post needs a Spanish speaker.", src: () => "assumption: 1.5×" },
+        help: "Multiplies the weeks to fill a post when it needs a Spanish speaker.", src: () => "1.5×, an assumption (no published estimate was found)" },
     ]},
   ];
   const ALL = GROUPS.flatMap(g => g.items);
@@ -1016,7 +1016,7 @@
     if (!post) return;
     post.vacant = Math.max(1, Math.round(P.vacancy_weeks_general * P.bilingual_vacancy_factor));
     sayBye(post);
-    eventNote(`A bilingual clinician quit in week ${S.week}. The room keeps its patients but takes no one new for ${post.vacant} weeks.`);
+    eventNote(`A bilingual clinician quit in week ${S.week}. The room keeps its patients, but it will not take anyone new for ${post.vacant} weeks.`);
     renderTexts(); if (!playing) setPlaying(true);
   }));
   $$(".js-hire").forEach(btn => btn.addEventListener("click", () => {
@@ -1024,7 +1024,7 @@
     if (empty) {  // fill the open bilingual post first, before adding a room
       empty.vacant = 0; empty.doc = newDoctor(true);
       renderTexts();
-      eventNote(`The open bilingual post was filled in week ${S.week}. That room takes new patients again.`);
+      eventNote(`The open bilingual post was filled in week ${S.week}, so that room takes new patients again.`);
       if (!playing) setPlaying(true);
       return;
     }
@@ -1032,7 +1032,7 @@
     S.posts.push({ bilingual: true, vacant: 0, slots: new Array(P.caseload_per_clinician).fill(null), doc: newDoctor(true) });
     P.bilingual++; S.layout = roomLayout(S.posts.length, P.caseload_per_clinician);
     place(); syncSettings(); renderTexts();
-    eventNote(`A new bilingual clinician started in week ${S.week}. The clinic now has ${S.posts.length} clinicians.`);
+    eventNote(`A new bilingual clinician started in week ${S.week}, so the clinic now has ${S.posts.length} clinicians.`);
     if (!playing) setPlaying(true);
   }));
 
@@ -1222,7 +1222,7 @@
       if (!reduceMotion && view !== "methods") setPlaying(true);
       requestAnimationFrame(loop);
     })
-    .catch(() => showStatus("The clinic settings (params.json) didn't load, so the board can't run. Reload the page to try again."));
+    .catch(() => showStatus("The clinic settings (params.json) did not load, so the board cannot run. Reloading the page might fix it."));
 }
 </script>
 </body>
