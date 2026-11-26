@@ -448,7 +448,7 @@
   }
   const rates = () => [P.latino_share * P.spanish_pref_share, P.latino_share * (1 - P.spanish_pref_share), 1 - P.latino_share].map(s => s * P.referrals_per_week);
   const sourced = c => ({ ...DATA.base, latino_share: c.latino_share, spanish_pref_share: c.spanish_pref_share, stage_probs: c.stage_probs,
-                          referrals_per_week: +sourcedReferrals(c).toFixed(1), general: 2, bilingual: 1 });
+                          referrals_per_week: +sourcedReferrals(c).toFixed(1), general: 2, bilingual: 1, completion_odds: 1 });
 
   // Layout ------------------------------------------------------------------------------------------------
   function roomLayout(n, K) {
@@ -563,6 +563,11 @@
     for (const post of S.posts) post.slots.forEach((b, idx) => {
       if (!b) return;
       const h = p.stage_probs[CHAIN_OF_TYPE[b.type]], row = h[b.stage].slice();
+      if (p.completion_odds !== 1) {  // a more (or less) effective program multiplies the weekly odds of finishing
+        const c = row[0], cn = c * p.completion_odds / (1 - c + c * p.completion_odds), sc = (1 - cn) / (1 - c);
+        for (let i = 0; i < 4; i++) row[i] *= sc;
+        row[0] = cn;
+      }
       if (b.weeksIn < 4) {  // waiting multiplies this week's dropout odds; the other moves shrink to make room
         const d = row[1], dn = d * b.odds / (1 - d + d * b.odds), sc = (1 - dn) / (1 - d);
         for (let i = 0; i < 4; i++) row[i] *= sc;
@@ -946,6 +951,11 @@
         help: "Each week, this share of the people still in a line leaves for good.", src: () => "about one month of patience (Kaplan & Johri): 21%" },
       { key: "wait_log_or_per_week", label: "How much waiting hurts", min: 0, max: 1, step: 0.005, live: true, fmt: v => v.toFixed(3),
         help: "Extra log-odds of dropping out per week waited, during the first four weeks of care.", src: () => "TEDS-D fit: 0.091 (NIATx clinics would imply 0.35)" },
+    ]},
+    { title: "Treatment", items: [
+      { key: "completion_odds", label: "Chance of finishing (×)", min: 0.5, max: 5, step: 0.1, live: true, fmt: v => `${v.toFixed(1)}×`,
+        help: "Multiplies each week's odds of completing treatment. Above 1 stands for a more effective program. Stays also get shorter, which frees slots.",
+        src: c => c.observed ? `1×, the fitted chains. In ${c.name}, ${pc(c.observed.Hispanic.completed)} of Latino and ${pc(c.observed["Non-Hispanic"].completed)} of non-Latino patients completed` : "1×, the fitted chains" },
     ]},
     { title: "Staff", items: [
       { key: "turnover_annual", label: "Clinicians quitting per year", min: 0, max: 1.5, step: 0.01, live: true, fmt: pc,
