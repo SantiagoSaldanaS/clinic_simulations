@@ -15,8 +15,8 @@ communities.append({
     "name": "San Benito County", "n": 0, "latino_share": 0.64, "spanish_pref_share": 0.39,
     "stage_probs": state["stage_probs"], "chain_source": {"Hispanic": "statewide", "Non-Hispanic": "statewide"},
     "offered_load": state["offered_load"], "wait_8plus_days": state["wait_8plus_days"],
-    "note": "From the county's behavioral health plan: 64% of substance use clients are Latino and about 1 in 4 clients "
-            "prefers Spanish. Treatment chains and referral volume use the statewide fit.",
+    "note": "The county's behavioral health plan reports that 64% of substance use clients are Latino and that about "
+            "1 in 4 clients prefers Spanish. The treatment chains and the referral volume use the statewide fit.",
 })
 fit = json.load(open(os.path.join(here, "outputs", "params_tedsd_ca.json")))
 summ = json.load(open(os.path.join(here, "outputs", "tedsd_ca_summary.json")))
